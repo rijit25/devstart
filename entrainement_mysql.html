@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrainement Intensif MySQL - NIVEAU GRAND MAÎTRE</title>
+    <style>
+        :root {
+            /* Thème MySQL : Orange/Bleu Marine */
+            --primary: #00758f; 
+            --secondary: #00546b;
+            --accent: #f29111; /* L'orange MySQL */
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --code-bg: #262626;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 { color: var(--secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .subtitle { color: #64748b; font-style: italic; }
+        
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 18px;
+            border: none;
+            background: #e2e8f0;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #475569;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        .tab-btn:hover { background: #cbd5e1; }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 117, 143, 0.3);
+        }
+
+        /* Content Sections */
+        .section {
+            display: none;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            animation: fadeIn 0.4s ease;
+        }
+        .section.active { display: block; }
+
+        /* Flashcards Styling */
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: 20px;
+        }
+        .flashcard {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            background: #fff;
+            position: relative;
+            user-select: none;
+        }
+        .flashcard:hover { 
+            transform: translateY(-5px); 
+            border-color: var(--accent); 
+            box-shadow: 0 10px 20px rgba(242, 145, 17, 0.15);
+        }
+        
+        .cat-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .fc-q { font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-bottom: 15px; line-height: 1.4; }
+        .fc-a { 
+            font-size: 1.6rem; 
+            color: var(--primary); 
+            font-family: 'Consolas', 'Monaco', monospace; 
+            margin-top: 15px;
+            padding-top: 20px;
+            border-top: 2px dashed #e2e8f0;
+            display: none; 
+            width: 80%;
+        }
+        .fc-hint { font-size: 0.9rem; color: #94a3b8; margin-top: auto; }
+
+        /* Code & Drills Styling */
+        .drill-title { margin-top: 0; color: var(--secondary); font-size: 1.5rem; }
+        .drill-desc { color: #64748b; margin-bottom: 20px; }
+        
+        .code-block {
+            background: var(--code-bg);
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            position: relative;
+            border-left: 5px solid var(--accent);
+        }
+        
+        /* SQL Syntax Highlighting */
+        .keyword { color: #f29111; font-weight: bold; } /* Orange Keywords */
+        .string { color: #a5f3fc; } /* Light Blue Strings */
+        .function { color: #d8b4fe; } /* Purple Functions */
+        .comment { color: #6b7280; font-style: italic; }
+        .type { color: #67e8f9; font-weight: bold; } /* Cyan types */
+
+        .code-input {
+            background: #404040;
+            border: 1px solid #525252;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            min-width: 80px;
+            text-align: center;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.2s;
+            text-transform: uppercase; /* Force SQL convention */
+        }
+        .code-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        .code-input.correct { background: #064e3b; border-color: var(--success); color: #4ade80; }
+        .code-input.incorrect { background: #450a0a; border-color: var(--error); }
+
+        /* Controls */
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: var(--secondary); }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e1;
+            color: #475569;
+        }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        .result-msg { font-weight: bold; margin-left: 15px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🐬 MySQL Master Class</h1>
+        <p class="subtitle">Architecture, Requêtes, Sécurité & Performance</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('flashcards')">⚡ Flashcards</button>
+        <button class="tab-btn" onclick="showTab('ddl')">🏗️ Structure</button>
+        <button class="tab-btn" onclick="showTab('select')">🔍 SELECT</button>
+        <button class="tab-btn" onclick="showTab('crud')">✍️ CRUD</button>
+        <button class="tab-btn" onclick="showTab('joins')">🔗 JOINTURES</button>
+        <button class="tab-btn" onclick="showTab('expert')">🚀 EXPERT</button>
+        <button class="tab-btn" onclick="showTab('admin')">🛡️ ADMIN & PERF</button>
+    </div>
+
+    <!-- 1. FLASHCARDS SECTION -->
+    <div id="flashcards" class="section active">
+        <div class="controls" style="margin-top:0; margin-bottom:15px;">
+            <h3 style="margin:0;">Vocabulaire & Concepts</h3>
+            <div>
+                <button class="btn btn-outline" style="padding:5px 15px; font-size:0.9rem;" onclick="toggleRandom()">🔀 Aléatoire: <span id="rand-status">OFF</span></button>
+                <span class="subtitle" style="margin-left:10px;" id="card-counter">1 / 75</span>
+            </div>
+        </div>
+
+        <div class="flashcard-container">
+            <div class="flashcard" onclick="flipCard()">
+                <div class="cat-badge" id="fc-cat" style="background:var(--primary);">Général</div>
+                <div class="fc-q" id="fc-q">Chargement...</div>
+                <div class="fc-a" id="fc-a">...</div>
+                <div class="fc-hint">Cliquez pour voir la réponse</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-outline" onclick="prevCard()">← Précédent</button>
+            <button class="btn btn-outline" onclick="nextCard()">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- 2. DDL DRILL -->
+    <div id="ddl" class="section">
+        <h3 class="drill-title">🏗️ Architecte de Données (DDL)</h3>
+        <p class="drill-desc">La base de tout : Créer des tables solides avec les bonnes contraintes.</p>
+
+        <div class="code-block">
+<span class="comment">-- Création de la table 'utilisateurs'</span>
+<span class="keyword">CREATE</span> <span class="keyword">TABLE</span> utilisateurs (
+    id <span class="type">INT</span> PRIMARY <input type="text" class="code-input" data-ans="KEY"> AUTO_INCREMENT,
+    email <span class="type">VARCHAR</span>(100) <input type="text" class="code-input" data-ans="UNIQUE">,
+    nom <span class="type">VARCHAR</span>(50) <input type="text" class="code-input" data-ans="NOT"> NULL,
+    created_at <span class="type">DATETIME</span> DEFAULT <input type="text" class="code-input" data-ans="CURRENT_TIMESTAMP">
+);
+
+<span class="comment">-- Création de la table 'commandes' avec Clé Étrangère</span>
+<span class="keyword">CREATE</span> <span class="keyword">TABLE</span> commandes (
+    id <span class="type">INT</span> PRIMARY KEY AUTO_INCREMENT,
+    user_id <span class="type">INT</span>,
+    <span class="keyword">FOREIGN</span> KEY (user_id) <input type="text" class="code-input" data-ans="REFERENCES"> utilisateurs(id)
+);
+        </div>
+        <button class="btn" onclick="checkCode('ddl')">Vérifier la Structure</button>
+        <span id="ddl-result" class="result-msg"></span>
+    </div>
+
+    <!-- 3. SELECT DRILL -->
+    <div id="select" class="section">
+        <h3 class="drill-title">🔍 L'Art de la Recherche (SELECT)</h3>
+        <p class="drill-desc">Filtrer, trier et limiter les données.</p>
+
+        <div class="code-block">
+<span class="comment">-- 1. Récupérer TOUTES les colonnes</span>
+<input type="text" class="code-input" data-ans="SELECT"> * <input type="text" class="code-input" data-ans="FROM"> clients;
+
+<span class="comment">-- 2. Filtrer par ville</span>
+SELECT nom FROM clients 
+<input type="text" class="code-input" data-ans="WHERE"> ville = 'Paris';
+
+<span class="comment">-- 3. Trier par prix décroissant</span>
+SELECT * FROM produits 
+<input type="text" class="code-input" data-ans="ORDER"> BY prix <input type="text" class="code-input" data-ans="DESC">;
+
+<span class="comment">-- 4. Recherche floue (commence par 'Dup')</span>
+SELECT * FROM clients WHERE nom <input type="text" class="code-input" data-ans="LIKE"> 'Dup%';
+        </div>
+        <button class="btn" onclick="checkCode('select')">Vérifier mes requêtes</button>
+        <span id="select-result" class="result-msg"></span>
+    </div>
+
+    <!-- 4. CRUD DRILL -->
+    <div id="crud" class="section">
+        <h3 class="drill-title">✍️ Gestion de Données (Insert, Update, Delete)</h3>
+        <p class="drill-desc">Modifier les données existantes.</p>
+
+        <div class="code-block">
+<span class="comment">-- 1. AJOUTER un nouvel utilisateur</span>
+<input type="text" class="code-input" data-ans="INSERT"> INTO utilisateurs (nom, age) 
+<input type="text" class="code-input" data-ans="VALUES"> ('Thomas', 25);
+
+<span class="comment">-- 2. MODIFIER l'email</span>
+<input type="text" class="code-input" data-ans="UPDATE"> utilisateurs 
+<input type="text" class="code-input" data-ans="SET"> email = 'new@mail.com' 
+WHERE id = 42;
+
+<span class="comment">-- 3. SUPPRIMER une ligne</span>
+<input type="text" class="code-input" data-ans="DELETE"> FROM commandes 
+WHERE statut = 'annule';
+        </div>
+        <button class="btn" onclick="checkCode('crud')">Vérifier mes modifications</button>
+        <span id="crud-result" class="result-msg"></span>
+    </div>
+
+    <!-- 5. JOINS DRILL -->
+    <div id="joins" class="section">
+        <h3 class="drill-title">🔗 Les Jointures (Relations)</h3>
+        <p class="drill-desc">Lier les tables entre elles.</p>
+
+        <div class="code-block">
+<span class="comment">-- 1. Intersection stricte (Clients AVEC Commandes)</span>
+SELECT utilisateurs.nom, commandes.montant 
+FROM utilisateurs
+<input type="text" class="code-input" data-ans="INNER"> JOIN commandes 
+<input type="text" class="code-input" data-ans="ON"> utilisateurs.id = commandes.user_id;
+
+<span class="comment">-- 2. Tout garder à gauche (Clients même SANS Commandes)</span>
+SELECT utilisateurs.nom, commandes.id
+FROM utilisateurs
+<input type="text" class="code-input" data-ans="LEFT"> JOIN commandes 
+ON utilisateurs.id = commandes.user_id;
+        </div>
+        <button class="btn" onclick="checkCode('joins')">Vérifier mes liens</button>
+        <span id="joins-result" class="result-msg"></span>
+    </div>
+
+    <!-- 6. EXPERT DRILL -->
+    <div id="expert" class="section">
+        <h3 class="drill-title">🚀 Expert : Sous-requêtes & Dates</h3>
+        <p class="drill-desc">Des requêtes complexes pour des besoins réels.</p>
+
+        <div class="code-block">
+<span class="comment">-- 1. Trouver les produits commandés par 'Jean' (Sous-requête)</span>
+SELECT * FROM produits WHERE id <input type="text" class="code-input" data-ans="IN"> (
+    SELECT produit_id FROM commandes WHERE client = 'Jean'
+);
+
+<span class="comment">-- 2. Trouver les commandes des 7 derniers jours (Fonctions Date)</span>
+SELECT * FROM commandes 
+WHERE date_com > <input type="text" class="code-input" data-ans="DATE_SUB">(NOW(), INTERVAL 7 DAY);
+
+<span class="comment">-- 3. Combiner Nom et Prénom dans une colonne (Fonctions String)</span>
+SELECT <input type="text" class="code-input" data-ans="CONCAT">(nom, ' ', prenom) AS nom_complet 
+FROM clients;
+
+<span class="comment">-- 4. Compter par catégorie (Agrégation)</span>
+SELECT cat, COUNT(*) FROM produits 
+<input type="text" class="code-input" data-ans="GROUP"> BY cat 
+<input type="text" class="code-input" data-ans="HAVING"> COUNT(*) > 10;
+        </div>
+        <button class="btn" onclick="checkCode('expert')">Vérifier Niveau Expert</button>
+        <span id="expert-result" class="result-msg"></span>
+    </div>
+
+    <!-- 7. ADMIN & PERF (NEW) -->
+    <div id="admin" class="section">
+        <h3 class="drill-title">🛡️ Admin & Performance</h3>
+        <p class="drill-desc">Gérez les utilisateurs, les droits et optimisez la vitesse.</p>
+
+        <div class="code-block">
+<span class="comment">-- 1. CRÉER un utilisateur 'stagiaire' avec mot de passe</span>
+<span class="keyword">CREATE</span> <span class="keyword">USER</span> 'stagiaire'@'localhost' <input type="text" class="code-input" data-ans="IDENTIFIED"> BY 'motdepasse';
+
+<span class="comment">-- 2. DONNER le droit de lire (SELECT) sur toutes les tables</span>
+<span class="keyword">GRANT</span> <input type="text" class="code-input" data-ans="SELECT"> ON *.* <input type="text" class="code-input" data-ans="TO"> 'stagiaire'@'localhost';
+
+<span class="comment">-- 3. RETIRER tous les droits (Sécurité)</span>
+<span class="keyword">REVOKE</span> ALL PRIVILEGES <input type="text" class="code-input" data-ans="FROM"> 'stagiaire'@'localhost';
+
+<span class="comment">-- 4. CRÉER un INDEX pour accélérer les recherches sur le 'nom'</span>
+CREATE <input type="text" class="code-input" data-ans="INDEX"> idx_nom ON clients(nom);
+
+<span class="comment">-- 5. CRÉER une VUE (Requête enregistrée) des clients parisiens</span>
+CREATE <input type="text" class="code-input" data-ans="VIEW"> vue_paris AS 
+SELECT * FROM clients WHERE ville = 'Paris';
+        </div>
+        <button class="btn" onclick="checkCode('admin')">Vérifier Admin</button>
+        <span id="admin-result" class="result-msg"></span>
+    </div>
+
+</div>
+
+<script>
+    // --- DATABASE SQL COMPLETE ---
+    const sqlCards = [
+        // BASES
+        { cat: "Concept", q: "Clé Primaire (Primary Key)", a: "ID Unique d'une ligne" },
+        { cat: "Concept", q: "Clé Étrangère (Foreign Key)", a: "Lien vers une autre table" },
+        { cat: "Concept", q: "Valeur NULL", a: "Absence de valeur (Vide)" },
+        { cat: "Concept", q: "Index", a: "Structure pour accélérer la recherche" },
+
+        // DDL (Structure)
+        { cat: "Structure", q: "Créer une table", a: "CREATE TABLE" },
+        { cat: "Structure", q: "Supprimer une table", a: "DROP TABLE" },
+        { cat: "Structure", q: "Ajouter une colonne", a: "ALTER TABLE ... ADD" },
+        { cat: "Structure", q: "Contrainte 'Pas de vide'", a: "NOT NULL" },
+        { cat: "Structure", q: "Contrainte 'Valeur Unique'", a: "UNIQUE" },
+        { cat: "Structure", q: "ID qui s'incrémente seul", a: "AUTO_INCREMENT" },
+
+        // REQUÊTES
+        { cat: "Lecture", q: "Condition (Filtre)", a: "WHERE" },
+        { cat: "Lecture", q: "Tri (Ordre)", a: "ORDER BY" },
+        { cat: "Lecture", q: "Limite", a: "LIMIT" },
+        { cat: "Lecture", q: "Recherche floue (Texte)", a: "LIKE" },
+        { cat: "Lecture", q: "Valeurs distinctes (Sans doublon)", a: "DISTINCT" },
+
+        // JOINTURES
+        { cat: "Jointure", q: "Intersection (A et B)", a: "INNER JOIN" },
+        { cat: "Jointure", q: "Tout A + B correspondant", a: "LEFT JOIN" },
+        { cat: "Jointure", q: "Condition de liaison", a: "ON" },
+
+        // FONCTIONS & EXPERT
+        { cat: "Expert", q: "Date et Heure actuelles", a: "NOW()" },
+        { cat: "Expert", q: "Concaténer des textes", a: "CONCAT()" },
+        { cat: "Expert", q: "Compter les lignes", a: "COUNT()" },
+        { cat: "Expert", q: "Grouper les résultats", a: "GROUP BY" },
+        { cat: "Expert", q: "Filtre sur un groupe (après group by)", a: "HAVING" },
+        { cat: "Expert", q: "Valider une transaction", a: "COMMIT" },
+        { cat: "Expert", q: "Annuler une transaction", a: "ROLLBACK" },
+
+        // ADMIN & PERF (NOUVEAU)
+        { cat: "Admin", q: "Créer un utilisateur", a: "CREATE USER" },
+        { cat: "Admin", q: "Donner des permissions", a: "GRANT" },
+        { cat: "Admin", q: "Retirer des permissions", a: "REVOKE" },
+        { cat: "Admin", q: "Table virtuelle (Raccourci requête)", a: "VIEW (Vue)" },
+        { cat: "Admin", q: "Analyser la performance d'une requête", a: "EXPLAIN" },
+        { cat: "Admin", q: "Commande pour vider une table rapidement", a: "TRUNCATE" }
+    ];
+
+    // --- LOGIC ---
+    let cards = [...sqlCards];
+    let currentIdx = 0;
+    let isRandom = false;
+
+    // Elements
+    let qEl, aEl, catEl, countEl;
+
+    function updateCard() {
+        if(!qEl) return;
+        
+        const c = cards[currentIdx];
+        qEl.innerText = c.q;
+        aEl.innerText = c.a;
+        catEl.innerText = c.cat;
+        
+        // Dynamic Colors
+        const colors = {
+            "Concept": "#00758f",
+            "Structure": "#dc2626",
+            "Lecture": "#16a34a",
+            "Jointure": "#f29111",
+            "Expert": "#7c3aed",
+            "Admin": "#000000" // Noir pour l'Admin
+        };
+        catEl.style.background = colors[c.cat] || "#64748b";
+        
+        aEl.style.display = 'none';
+        countEl.innerText = `${currentIdx + 1} / ${cards.length}`;
+    }
+
+    window.flipCard = function() {
+        aEl.style.display = (aEl.style.display === 'none') ? 'block' : 'none';
+    }
+
+    window.nextCard = function() {
+        currentIdx = (currentIdx + 1) % cards.length;
+        updateCard();
+    }
+
+    window.prevCard = function() {
+        currentIdx = (currentIdx - 1 + cards.length) % cards.length;
+        updateCard();
+    }
+
+    window.toggleRandom = function() {
+        isRandom = !isRandom;
+        const statusSpan = document.getElementById('rand-status');
+        
+        if(isRandom) {
+            cards = [...sqlCards].sort(() => Math.random() - 0.5);
+            statusSpan.innerText = "ON";
+            statusSpan.style.color = "#10b981";
+        } else {
+            cards = [...sqlCards];
+            statusSpan.innerText = "OFF";
+            statusSpan.style.color = "inherit";
+        }
+        currentIdx = 0;
+        updateCard();
+    }
+
+    window.showTab = function(id) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(id).classList.add('active');
+        
+        const tabs = ['flashcards', 'ddl', 'select', 'crud', 'joins', 'expert', 'admin'];
+        const idx = tabs.indexOf(id);
+        if(idx >= 0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+    }
+
+    window.checkCode = function(sectionId) {
+        const inputs = document.querySelectorAll(`#${sectionId} .code-input`);
+        let errors = 0;
+        
+        inputs.forEach(inp => {
+            const userVal = inp.value.trim().toUpperCase().replace(/\s/g, ''); 
+            const correctVal = inp.getAttribute('data-ans').toUpperCase().replace(/\s/g, '');
+            
+            if(userVal === correctVal) {
+                inp.classList.add('correct');
+                inp.classList.remove('incorrect');
+            } else {
+                inp.classList.add('incorrect');
+                inp.classList.remove('correct');
+                errors++;
+            }
+        });
+
+        const resEl = document.getElementById(`${sectionId}-result`);
+        if(errors === 0) {
+            resEl.innerText = "✨ Code Valide !";
+            resEl.style.color = "#16a34a";
+        } else {
+            resEl.innerText = `⚠️ ${errors} erreurs détectées.`;
+            resEl.style.color = "#dc2626";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        qEl = document.getElementById('fc-q');
+        aEl = document.getElementById('fc-a');
+        catEl = document.getElementById('fc-cat');
+        countEl = document.getElementById('card-counter');
+        
+        updateCard();
+    });
+
+</script>
+
+</body>
+</html>

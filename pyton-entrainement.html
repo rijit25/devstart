@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrainement Intensif Python - GRAND MAÎTRE</title>
+    <style>
+        :root {
+            /* Thème Python : Bleu et Jaune */
+            --primary: #306998; /* Bleu Python */
+            --primary-light: #4B8BBE;
+            --accent: #FFD43B; /* Jaune Python */
+            --secondary: #1e1e1e; /* Fond sombre code */
+            --text-dark: #333;
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            
+            /* Thème Labs (Terminal) */
+            --lab-bg: #0f172a;
+            --lab-accent: #38bdf8;
+            --lab-text: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(48, 105, 152, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: "🐍";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 60px;
+            opacity: 0.2;
+        }
+        header::after {
+            content: "PYTHON";
+            position: absolute;
+            right: -10px;
+            bottom: -20px;
+            font-size: 100px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.1);
+            transform: rotate(-5deg);
+        }
+        h1 { margin: 0; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; font-size: 2.2rem; }
+        .subtitle { color: rgba(255,255,255,0.9); font-style: italic; margin-top: 10px; font-size: 1.1rem; }
+
+        /* Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 700;
+            color: var(--primary);
+            transition: all 0.2s;
+            border-bottom: 3px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .tab-btn:hover { transform: translateY(-2px); border-bottom-color: var(--accent); }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-bottom-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(48, 105, 152, 0.4);
+        }
+        .tab-btn.lab-btn {
+            background: var(--lab-bg);
+            color: var(--lab-accent);
+            border-bottom: 3px solid #1e293b;
+        }
+        .tab-btn.lab-btn.active {
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+            background: #1e293b;
+            border-color: var(--lab-accent);
+        }
+
+        /* Content Area */
+        .section {
+            display: none;
+            background: var(--card);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            animation: fadeIn 0.4s ease;
+        }
+        .section.active { display: block; }
+
+        /* Flashcards */
+        .flashcard {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 50px 20px;
+            text-align: center;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            background: #fff;
+            position: relative;
+            user-select: none;
+        }
+        .flashcard:hover { 
+            transform: translateY(-5px); 
+            border-color: var(--primary); 
+            box-shadow: 0 10px 20px rgba(48, 105, 152, 0.15);
+        }
+        
+        .category-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: var(--text-dark);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .fc-question { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 20px; line-height: 1.4; }
+        .fc-answer { 
+            font-size: 1.8rem; 
+            color: var(--text-dark); 
+            font-family: 'Consolas', 'Monaco', monospace; 
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #e5e7eb;
+            display: none; 
+            width: 80%;
+        }
+        .fc-hint { font-size: 0.9rem; color: #9ca3af; margin-top: auto; }
+
+        /* Code Drills */
+        .drill-title { 
+            margin-top: 0; 
+            color: var(--primary); 
+            font-size: 1.8rem; 
+            border-left: 6px solid var(--accent); 
+            padding-left: 20px; 
+            margin-bottom: 10px;
+        }
+        .drill-desc { color: #666; margin-bottom: 25px; font-size: 1.1rem; }
+        
+        .code-block {
+            background: var(--secondary);
+            color: #d4d4d4;
+            padding: 30px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            position: relative;
+            font-size: 1.1rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        
+        /* Python Syntax Highlighting */
+        .kwd { color: #569cd6; font-weight: bold; } /* Keywords: def, if, import */
+        .str { color: #ce9178; } /* Strings */
+        .fn { color: #dcdcaa; } /* Functions */
+        .cmt { color: #6a9955; font-style: italic; } /* Comments */
+        .num { color: #b5cea8; } /* Numbers */
+        .cls { color: #4ec9b0; } /* Classes */
+        .blt { color: #c586c0; } /* Built-ins: print, len */
+
+        .code-input {
+            background: #3c3c3c;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 6px;
+            min-width: 70px;
+            text-align: center;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+        .code-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        .code-input.correct { background: #064e3b; border-color: var(--success); color: #4ade80; }
+        .code-input.incorrect { background: #450a0a; border-color: var(--error); }
+
+        /* Controls */
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e1;
+            color: #64748b;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        .result-msg { font-weight: bold; margin-left: 15px; font-size: 1.1rem; }
+
+        /* --- 1000 LABS STYLES --- */
+        #labs { background: var(--lab-bg); color: var(--lab-text); border: 1px solid #334155; }
+        .lab-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 30px; background: #1e293b; padding: 20px; 
+            border-radius: 12px; border: 1px solid #334155; 
+        }
+        .lab-progress { font-family: 'Consolas', monospace; font-size: 2rem; color: var(--lab-accent); font-weight: bold; }
+        .lab-container { text-align: center; padding: 20px; }
+        .lab-question { font-size: 1.6rem; margin-bottom: 40px; color: #fff; font-weight: 600; font-family: 'Segoe UI', sans-serif; }
+        .lab-input { 
+            background: #0f172a; border: 2px solid #475569; padding: 15px 25px; 
+            color: white; font-family: 'Consolas', monospace; font-size: 1.3rem; 
+            border-radius: 8px; margin-right: 15px; width: 300px; text-align: center; 
+        }
+        .lab-input:focus { outline: none; border-color: var(--lab-accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+        .progress-bar-container { width: 100%; height: 12px; background: #334155; border-radius: 6px; margin-top: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--lab-accent); width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--lab-accent); }
+        .btn-lab { 
+            background: var(--lab-accent); color: #0f172a; border:none; padding: 15px 35px; 
+            border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 1.2rem; 
+            transition: all 0.2s;
+        }
+        .btn-lab:hover { background: #7dd3fc; transform: scale(1.05); box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🐍 Python : Grand Maître</h1>
+        <p class="subtitle">Bases, Structures, POO & Défi 1000 Labs</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('flashcards')">🧠 Flashcards</button>
+        <button class="tab-btn" onclick="showTab('bases')">🏗️ Bases & Logique</button>
+        <button class="tab-btn" onclick="showTab('structures')">📦 Listes & Dicts</button>
+        <button class="tab-btn" onclick="showTab('functions')">⚙️ Fonctions</button>
+        <button class="tab-btn" onclick="showTab('poo')">🏛️ POO (Classes)</button>
+        <button class="tab-btn lab-btn" onclick="showTab('labs')">🧪 DÉFI 1000 LABS</button>
+    </div>
+
+    <!-- 1. FLASHCARDS SECTION -->
+    <div id="flashcards" class="section active">
+        <div class="controls" style="margin-top:0; margin-bottom:20px;">
+            <h3 style="margin:0; color:var(--primary);">Concepts & Syntaxe</h3>
+            <div>
+                <button class="btn-outline" onclick="toggleRandom()">🔀 Aléatoire: <span id="rand-status">OFF</span></button>
+                <span class="subtitle" style="margin-left:15px; color:#666; font-weight:bold;" id="card-counter">1 / 80</span>
+            </div>
+        </div>
+
+        <div class="flashcard" onclick="flipCard()">
+            <div class="category-badge" id="fc-cat">Général</div>
+            <div class="fc-question" id="fc-q">Chargement...</div>
+            <div class="fc-answer" id="fc-a">...</div>
+            <div class="fc-hint">Cliquez pour révéler la réponse</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-outline" onclick="prevCard()">← Précédent</button>
+            <button class="btn-outline" onclick="nextCard()">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- 2. BASES & LOGIQUE -->
+    <div id="bases" class="section">
+        <h3 class="drill-title">🏗️ Les Fondations (Types & Flux)</h3>
+        <p class="drill-desc">Variables, conditions et indentations. Python ne pardonne pas sur les espaces !</p>
+
+        <div class="code-block">
+<span class="cmt"># 1. Afficher un message dans la console</span>
+<input type="text" class="code-input" data-ans="print">("Bonjour Python")
+
+<span class="cmt"># 2. Demander une saisie à l'utilisateur</span>
+nom = <input type="text" class="code-input" data-ans="input">("Quel est ton nom ?")
+
+<span class="cmt"># 3. Convertir une chaîne "10" en entier</span>
+nombre = <input type="text" class="code-input" data-ans="int">("10")
+
+<span class="cmt"># 4. Condition : Si age est sup ou égal à 18</span>
+<span class="kwd">if</span> age >= 18<input type="text" class="code-input" data-ans=":">
+    print("Majeur")
+<span class="cmt"># 5. Sinon Si (Else If)</span>
+<span class="kwd"><input type="text" class="code-input" data-ans="elif"></span> age > 12:
+    print("Ado")
+<span class="kwd">else</span>:
+    print("Enfant")
+
+<span class="cmt"># 6. Boucle : Pour i allant de 0 à 4 (5 exclu)</span>
+<span class="kwd">for</span> i in <input type="text" class="code-input" data-ans="range">(5):
+    print(i)
+        </div>
+        <button class="btn" onclick="checkCode('bases')">Vérifier Bases</button>
+        <span id="bases-result" class="result-msg"></span>
+    </div>
+
+    <!-- 3. STRUCTURES DE DONNÉES -->
+    <div id="structures" class="section">
+        <h3 class="drill-title">📦 Listes, Tuples & Dictionnaires</h3>
+        <p class="drill-desc">Savoir manipuler les données est essentiel. Attention : Liste=[], Tuple=(), Dict={}.</p>
+
+        <div class="code-block">
+fruits = ["Pomme", "Banane", "Cerise"]
+
+<span class="cmt"># 1. Ajouter "Orange" à la FIN de la liste</span>
+fruits.<input type="text" class="code-input" data-ans="append">("Orange")
+
+<span class="cmt"># 2. Obtenir la taille de la liste</span>
+taille = <input type="text" class="code-input" data-ans="len">(fruits)
+
+<span class="cmt"># 3. Slicing : Récupérer les 2 premiers éléments [0, 1]</span>
+premiers = fruits[<input type="text" class="code-input" data-ans=":2">]
+
+personne = {"nom": "Luc", "age": 25}
+
+<span class="cmt"># 4. Récupérer toutes les clés du dictionnaire</span>
+cles = personne.<input type="text" class="code-input" data-ans="keys">()
+
+<span class="cmt"># 5. Récupérer toutes les valeurs</span>
+valeurs = personne.<input type="text" class="code-input" data-ans="values">()
+
+<span class="cmt"># 6. Récupérer une valeur de façon sécurisée (sans erreur si clé absente)</span>
+ville = personne.<input type="text" class="code-input" data-ans="get">("ville", "Inconnue")
+        </div>
+        <button class="btn" onclick="checkCode('structures')">Vérifier Structures</button>
+        <span id="structures-result" class="result-msg"></span>
+    </div>
+
+    <!-- 4. FONCTIONS -->
+    <div id="functions" class="section">
+        <h3 class="drill-title">⚙️ Fonctions & Modules</h3>
+        <p class="drill-desc">Ne répétez pas votre code (DRY). Créez des fonctions réutilisables.</p>
+
+        <div class="code-block">
+<span class="cmt"># 1. Mot-clé pour définir une fonction</span>
+<span class="kwd"><input type="text" class="code-input" data-ans="def"></span> calculer_somme(a, b):
+    <span class="cmt"># 2. Renvoyer le résultat</span>
+    <span class="kwd"><input type="text" class="code-input" data-ans="return"></span> a + b
+
+<span class="cmt"># 3. Paramètre par défaut (taxe = 20 si non précisé)</span>
+def prix_ttc(ht, taxe<input type="text" class="code-input" data-ans="=">20):
+    return ht * (1 + taxe/100)
+
+<span class="cmt"># 4. Importer le module math</span>
+<span class="kwd"><input type="text" class="code-input" data-ans="import"></span> math
+
+<span class="cmt"># 5. Utiliser la racine carrée (sqrt)</span>
+racine = math.<input type="text" class="code-input" data-ans="sqrt">(16)
+
+<span class="cmt"># 6. Fonction Lambda (anonyme) pour mettre au carré</span>
+carre = <span class="kwd"><input type="text" class="code-input" data-ans="lambda"></span> x: x ** 2
+        </div>
+        <button class="btn" onclick="checkCode('functions')">Vérifier Fonctions</button>
+        <span id="functions-result" class="result-msg"></span>
+    </div>
+
+    <!-- 5. POO (CLASSES) -->
+    <div id="poo" class="section">
+        <h3 class="drill-title">🏛️ Programmation Orientée Objet</h3>
+        <p class="drill-desc">Python est orienté objet. Maîtrisez <code>class</code>, <code>__init__</code> et le fameux <code>self</code>.</p>
+
+        <div class="code-block">
+<span class="cmt"># 1. Définir une classe 'Chien'</span>
+<span class="kwd"><input type="text" class="code-input" data-ans="class"></span> Chien:
+    
+    <span class="cmt"># 2. Le constructeur (méthode d'initialisation)</span>
+    def <span class="fn"><input type="text" class="code-input" data-ans="__init__"></span>(self, nom):
+        <span class="cmt"># 3. Assigner l'argument à l'attribut de l'instance</span>
+        <span class="kwd">self</span>.nom = nom
+
+    def aboyer(self):
+        print("Wouf!")
+
+<span class="cmt"># 4. Créer une instance (un objet) de Chien</span>
+medor = <input type="text" class="code-input" data-ans="Chien">("Médor")
+
+<span class="cmt"># 5. Héritage : 'Caniche' hérite de 'Chien'</span>
+class Caniche(<input type="text" class="code-input" data-ans="Chien">):
+    pass
+        </div>
+        <button class="btn" onclick="checkCode('poo')">Vérifier POO</button>
+        <span id="poo-result" class="result-msg"></span>
+    </div>
+
+    <!-- 6. 1000 LABS CHALLENGE -->
+    <div id="labs" class="section">
+        <div class="lab-header">
+            <div>
+                <h3 style="margin:0; color:#fff;">🧪 GÉNÉRATEUR INFINI DE LABS PYTHON</h3>
+                <small style="color:#94a3b8;">Entraînement procédural aléatoire</small>
+            </div>
+            <div style="text-align:right;">
+                <div class="lab-progress" id="lab-count-display">0 / 1000</div>
+                <div style="font-size:0.8rem; color:#94a3b8;">LABS COMPLÉTÉS</div>
+            </div>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="lab-progress-bar"></div>
+        </div>
+
+        <div class="lab-container">
+            <div id="lab-question-area" class="lab-question">
+                Chargement du lab...
+            </div>
+            
+            <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px;">
+                <input type="text" id="lab-input" class="lab-input" placeholder="Votre code Python..." autocomplete="off">
+                <button class="btn-lab" onclick="checkLab()">VALIDER</button>
+            </div>
+            
+            <p id="lab-feedback" style="height:20px; font-weight:bold; margin-top:20px;"></p>
+            <button class="btn-outline" style="margin-top:20px; border-color:#334155; color:#94a3b8;" onclick="generateLab()">Passer cette question</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- DATABASE PYTHON COMPLETE ---
+    const pyCards = [
+        // BASES
+        { cat: "Bases", q: "Fonction pour afficher du texte", a: "print()" },
+        { cat: "Bases", q: "Fonction pour lire une saisie utilisateur", a: "input()" },
+        { cat: "Bases", q: "Convertir en nombre entier", a: "int()" },
+        { cat: "Bases", q: "Convertir en chaîne de caractères", a: "str()" },
+        { cat: "Bases", q: "Opérateur puissance (ex: 2 au cube)", a: "**" },
+        { cat: "Bases", q: "Opérateur division entière (sans reste)", a: "//" },
+        { cat: "Bases", q: "Opérateur modulo (reste de la division)", a: "%" },
+        
+        // STRUCTURES
+        { cat: "Listes", q: "Ajouter un élément à la fin d'une liste", a: ".append()" },
+        { cat: "Listes", q: "Insérer un élément à un index précis", a: ".insert()" },
+        { cat: "Listes", q: "Retirer et renvoyer le dernier élément", a: ".pop()" },
+        { cat: "Listes", q: "Trier la liste", a: ".sort()" },
+        { cat: "Listes", q: "Inverser la liste", a: ".reverse()" },
+        { cat: "Listes", q: "Longueur d'une liste/chaine", a: "len()" },
+        
+        // DICTIONNAIRES & SETS
+        { cat: "Dicts", q: "Obtenir toutes les clés", a: ".keys()" },
+        { cat: "Dicts", q: "Obtenir toutes les valeurs", a: ".values()" },
+        { cat: "Dicts", q: "Obtenir les paires (clé, valeur)", a: ".items()" },
+        { cat: "Dicts", q: "Structure avec des éléments UNIQUES (pas de doublon)", a: "set (Ensemble)" },
+        
+        // LOGIQUE
+        { cat: "Logique", q: "Boucle sur une séquence (liste, range...)", a: "for" },
+        { cat: "Logique", q: "Boucle tant qu'une condition est vraie", a: "while" },
+        { cat: "Logique", q: "Générer une suite de nombres", a: "range()" },
+        { cat: "Logique", q: "Arrêter une boucle immédiatement", a: "break" },
+        { cat: "Logique", q: "Passer à l'itération suivante", a: "continue" },
+        
+        // POO & AVANCÉ
+        { cat: "POO", q: "Mot-clé pour définir une classe", a: "class" },
+        { cat: "POO", q: "Méthode constructeur", a: "__init__" },
+        { cat: "POO", q: "Référence à l'objet courant", a: "self" },
+        { cat: "Avancé", q: "Créer une liste en une ligne (syntaxe)", a: "List Comprehension" },
+        { cat: "Avancé", q: "Gérer les erreurs (bloc)", a: "try / except" },
+        { cat: "Avancé", q: "Ouvrir un fichier", a: "open()" }
+    ];
+
+    // --- LOGIC ---
+    let cards = [...pyCards];
+    let currentIdx = 0;
+    let isRandom = false;
+
+    // Elements
+    let qEl, aEl, catEl, countEl;
+
+    function updateCard() {
+        if(!qEl) return;
+        
+        const c = cards[currentIdx];
+        qEl.innerText = c.q;
+        aEl.innerText = c.a;
+        catEl.innerText = c.cat;
+        
+        // Dynamic Colors
+        const colors = {
+            "Bases": "#306998",
+            "Listes": "#FFD43B",
+            "Dicts": "#FFD43B",
+            "Logique": "#16a34a",
+            "POO": "#dc2626",
+            "Avancé": "#9333ea"
+        };
+        catEl.style.backgroundColor = colors[c.cat] || "#333";
+        catEl.style.color = (c.cat === "Listes" || c.cat === "Dicts") ? "#333" : "#fff";
+        
+        aEl.style.display = 'none';
+        countEl.innerText = `${currentIdx + 1} / ${cards.length}`;
+    }
+
+    window.flipCard = function() {
+        aEl.style.display = (aEl.style.display === 'none') ? 'block' : 'none';
+    }
+
+    window.nextCard = function() {
+        currentIdx = (currentIdx + 1) % cards.length;
+        updateCard();
+    }
+
+    window.prevCard = function() {
+        currentIdx = (currentIdx - 1 + cards.length) % cards.length;
+        updateCard();
+    }
+
+    window.toggleRandom = function() {
+        isRandom = !isRandom;
+        const statusSpan = document.getElementById('rand-status');
+        
+        if(isRandom) {
+            cards = [...pyCards].sort(() => Math.random() - 0.5);
+            statusSpan.innerText = "ON";
+            statusSpan.style.color = "#16a34a";
+        } else {
+            cards = [...pyCards];
+            statusSpan.innerText = "OFF";
+            statusSpan.style.color = "inherit";
+        }
+        currentIdx = 0;
+        updateCard();
+    }
+
+    window.showTab = function(id) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(id).classList.add('active');
+        
+        const tabs = ['flashcards', 'bases', 'structures', 'functions', 'poo', 'labs'];
+        const idx = tabs.indexOf(id);
+        if(idx >= 0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+
+        if(id === 'labs') {
+            loadLabProgress();
+            generateLab();
+        }
+    }
+
+    window.checkCode = function(sectionId) {
+        const inputs = document.querySelectorAll(`#${sectionId} .code-input`);
+        let errors = 0;
+        
+        inputs.forEach(inp => {
+            const userVal = inp.value.trim().toLowerCase().replace(/\s/g, ''); 
+            const correctVal = inp.getAttribute('data-ans').toLowerCase().replace(/\s/g, '');
+            
+            // Special check for slicing notation like :2
+            if(correctVal === ':2' && userVal === ':2') {
+                 inp.classList.add('correct');
+                 inp.classList.remove('incorrect');
+                 return;
+            }
+
+            if(userVal === correctVal) {
+                inp.classList.add('correct');
+                inp.classList.remove('incorrect');
+            } else {
+                inp.classList.add('incorrect');
+                inp.classList.remove('correct');
+                errors++;
+            }
+        });
+
+        const resEl = document.getElementById(`${sectionId}-result`);
+        if(errors === 0) {
+            resEl.innerText = "✨ Code Python Parfait !";
+            resEl.style.color = "#16a34a";
+        } else {
+            resEl.innerText = `⚠️ ${errors} erreurs.`;
+            resEl.style.color = "#dc2626";
+        }
+    }
+
+    // --- 1000 LABS LOGIC ---
+    let currentLabAnswer = "";
+    let labsCompleted = 0;
+
+    function loadLabProgress() {
+        const saved = localStorage.getItem('pyLabsCompleted');
+        if(saved) {
+            labsCompleted = parseInt(saved, 10);
+        }
+        updateLabUI();
+    }
+
+    function saveLabProgress() {
+        localStorage.setItem('pyLabsCompleted', labsCompleted);
+        updateLabUI();
+    }
+
+    function updateLabUI() {
+        document.getElementById('lab-count-display').textContent = `${labsCompleted} / 1000`;
+        const percent = Math.min(100, (labsCompleted / 1000) * 100);
+        document.getElementById('lab-progress-bar').style.width = `${percent}%`;
+    }
+
+    window.generateLab = function() {
+        const feedback = document.getElementById('lab-feedback');
+        const input = document.getElementById('lab-input');
+        feedback.textContent = "";
+        input.value = "";
+        input.classList.remove('correct', 'incorrect');
+        input.style.borderColor = "#475569";
+
+        // Patterns de génération Python
+        const types = ['syntax_var', 'list_method', 'dict_method', 'loop_range', 'slicing'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        
+        let questionText = "";
+        let answer = "";
+
+        if (type === 'syntax_var') {
+            const vars = ['nom', 'age', 'score', 'ville'];
+            const val = ['"Toto"', '25', '100', '"Paris"'];
+            const idx = Math.floor(Math.random() * vars.length);
+            questionText = `Déclarez une variable <span style="color:#38bdf8">${vars[idx]}</span> avec la valeur ${val[idx]}.`;
+            answer = `${vars[idx]} = ${val[idx]}`;
+        } 
+        else if (type === 'list_method') {
+            const scenarios = [
+                { q: "Méthode pour ajouter 'X' à la fin d'une liste ?", a: "append" },
+                { q: "Méthode pour retirer le dernier élément ?", a: "pop" },
+                { q: "Méthode pour trier la liste ?", a: "sort" },
+                { q: "Fonction pour avoir la longueur de la liste ?", a: "len" }
+            ];
+            const sc = scenarios[Math.floor(Math.random() * scenarios.length)];
+            questionText = sc.q;
+            answer = sc.a;
+        }
+        else if (type === 'dict_method') {
+             const scenarios = [
+                { q: "Méthode pour obtenir les clés d'un dict ?", a: "keys" },
+                { q: "Méthode pour obtenir les valeurs d'un dict ?", a: "values" },
+                { q: "Méthode pour obtenir les paires (clé, val) ?", a: "items" }
+            ];
+            const sc = scenarios[Math.floor(Math.random() * scenarios.length)];
+            questionText = sc.q;
+            answer = sc.a;
+        }
+        else if (type === 'loop_range') {
+            const n = Math.floor(Math.random() * 10) + 1;
+            questionText = `Ecrivez l'appel de range pour aller de 0 à ${n-1}.`;
+            answer = `range(${n})`;
+        }
+        else if (type === 'slicing') {
+            questionText = `Syntaxe de slicing pour prendre du début jusqu'à l'index 3 (exclu) ?`;
+            answer = "[:3]";
+        }
+
+        document.getElementById('lab-question-area').innerHTML = questionText;
+        currentLabAnswer = answer;
+    }
+
+    window.checkLab = function() {
+        const input = document.getElementById('lab-input');
+        const feedback = document.getElementById('lab-feedback');
+        // Normalize: remove spaces around, but keep internal structure if needed
+        let userVal = input.value.trim(); 
+        
+        // Simple normalization for Python code (remove spaces around = or inside brackets)
+        userVal = userVal.replace(/\s*=\s*/g, "=").replace(/\s*\(\s*/g, "(").replace(/\s*\)\s*/g, ")");
+        let correctVal = currentLabAnswer.replace(/\s*=\s*/g, "=").replace(/\s*\(\s*/g, "(").replace(/\s*\)\s*/g, ")");
+
+        if (userVal === correctVal) {
+            input.style.borderColor = "#16a34a";
+            feedback.style.color = "#16a34a";
+            feedback.textContent = "CORRECT ! +1 Lab";
+            labsCompleted++;
+            saveLabProgress();
+            
+            setTimeout(() => {
+                generateLab();
+            }, 1000);
+        } else {
+            input.style.borderColor = "#dc2626";
+            feedback.style.color = "#dc2626";
+            feedback.textContent = "Incorrect. Essayez encore.";
+        }
+    }
+    
+    // Allow Enter key
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "Enter" && document.getElementById('labs').classList.contains('active')) {
+            window.checkLab();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        qEl = document.getElementById('fc-q');
+        aEl = document.getElementById('fc-a');
+        catEl = document.getElementById('fc-cat');
+        countEl = document.getElementById('card-counter');
+        
+        updateCard();
+    });
+
+</script>
+
+</body>
+</html>

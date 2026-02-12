@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrainement Intensif PHP - MODERN & SECURE</title>
+    <style>
+        :root {
+            /* Thème PHP : Violet Eléphant & Bleu */
+            --primary: #777BB4;
+            /* Violet PHP */
+            --primary-dark: #4F5B93;
+            --accent: #8892BF;
+            --secondary: #1e1e2f;
+            /* Fond sombre moderne */
+            --text-dark: #333;
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg: #f4f6f9;
+            --card: #ffffff;
+
+            /* Thème Labs (Terminal Serveur) */
+            --lab-bg: #282a36;
+            /* Dracula theme style */
+            --lab-accent: #bd93f9;
+            /* Violet néon */
+            --lab-text: #f8f8f2;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(119, 123, 180, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "🐘";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 60px;
+            opacity: 0.2;
+        }
+
+        header::after {
+            content: "<?php";
+            position: absolute;
+            right: -10px;
+            bottom: -20px;
+            font-size: 80px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.1);
+            transform: rotate(-10deg);
+        }
+
+        h1 {
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            transition: all 0.2s;
+            border-bottom: 3px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-bottom-color: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(119, 123, 180, 0.4);
+        }
+
+        .tab-btn.lab-btn {
+            background: var(--lab-bg);
+            color: var(--lab-accent);
+            border-bottom: 3px solid #44475a;
+        }
+
+        .tab-btn.lab-btn.active {
+            box-shadow: 0 0 15px rgba(189, 147, 249, 0.5);
+            background: #44475a;
+            border-color: var(--lab-accent);
+        }
+
+        /* Content Area */
+        .section {
+            display: none;
+            background: var(--card);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Flashcards */
+        .flashcard {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 50px 20px;
+            text-align: center;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            background: #fff;
+            position: relative;
+            user-select: none;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(119, 123, 180, 0.15);
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-dark);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .fc-question {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .fc-answer {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #e5e7eb;
+            display: none;
+            width: 80%;
+        }
+
+        .fc-hint {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-top: auto;
+        }
+
+        /* Code Drills */
+        .drill-title {
+            margin-top: 0;
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            border-left: 6px solid var(--primary);
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .drill-desc {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .code-block {
+            background: #282a36;
+            /* Dracula Theme */
+            color: #f8f8f2;
+            padding: 30px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            position: relative;
+            font-size: 1.1rem;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* PHP Syntax Highlighting */
+        .kwd {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Keywords: function, echo, if */
+        .str {
+            color: #f1fa8c;
+        }
+
+        /* Strings */
+        .var {
+            color: #8be9fd;
+            font-style: italic;
+        }
+
+        /* Variables: $var */
+        .fn {
+            color: #50fa7b;
+        }
+
+        /* Functions */
+        .cmt {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        /* Comments */
+        .cls {
+            color: #bd93f9;
+        }
+
+        /* Classes */
+
+        .code-input {
+            background: #44475a;
+            border: 1px solid #6272a4;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 6px;
+            min-width: 70px;
+            text-align: center;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .code-input:focus {
+            outline: 2px solid var(--primary);
+            border-color: transparent;
+        }
+
+        .code-input.correct {
+            background: #16a34a;
+            border-color: #16a34a;
+            color: white;
+        }
+
+        .code-input.incorrect {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e1;
+            color: #64748b;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .result-msg {
+            font-weight: bold;
+            margin-left: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* --- 1000 LABS STYLES --- */
+        #labs {
+            background: var(--lab-bg);
+            color: var(--lab-text);
+            border: 1px solid #44475a;
+        }
+
+        .lab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: #44475a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #6272a4;
+        }
+
+        .lab-progress {
+            font-family: 'Consolas', monospace;
+            font-size: 2rem;
+            color: var(--lab-accent);
+            font-weight: bold;
+        }
+
+        .lab-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .lab-question {
+            font-size: 1.6rem;
+            margin-bottom: 40px;
+            color: #fff;
+            font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .lab-input {
+            background: #282a36;
+            border: 2px solid #6272a4;
+            padding: 15px 25px;
+            color: #50fa7b;
+            font-family: 'Consolas', monospace;
+            font-size: 1.3rem;
+            border-radius: 8px;
+            margin-right: 15px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .lab-input:focus {
+            outline: none;
+            border-color: var(--lab-accent);
+            box-shadow: 0 0 15px rgba(189, 147, 249, 0.3);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #44475a;
+            border-radius: 6px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--lab-accent);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px var(--lab-accent);
+        }
+
+        .btn-lab {
+            background: var(--lab-accent);
+            color: #282a36;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .btn-lab:hover {
+            background: #d6bcfa;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(189, 147, 249, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🐘 PHP : Modern & Secure</h1>
+            <p class="subtitle">Bases, PDO, Sécurité, POO & Défi 1000 Labs</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('flashcards')">🧠 Flashcards</button>
+            <button class="tab-btn" onclick="showTab('bases')">🏗️ Bases & Arrays</button>
+            <button class="tab-btn" onclick="showTab('forms')">📝 Formulaires & Sécu</button>
+            <button class="tab-btn" onclick="showTab('pdo')">🗄️ BDD (PDO)</button>
+            <button class="tab-btn" onclick="showTab('poo')">🏛️ POO (Classes)</button>
+            <button class="tab-btn lab-btn" onclick="showTab('labs')">🧪 DÉFI 1000 LABS</button>
+        </div>
+
+        <!-- 1. FLASHCARDS SECTION -->
+        <div id="flashcards" class="section active">
+            <div class="controls" style="margin-top:0; margin-bottom:20px;">
+                <h3 style="margin:0; color:var(--primary-dark);">Concepts & Fonctions</h3>
+                <div>
+                    <button class="btn-outline" onclick="toggleRandom()">🔀 Aléatoire: <span
+                            id="rand-status">OFF</span></button>
+                    <span class="subtitle" style="margin-left:15px; color:#666; font-weight:bold;" id="card-counter">1 /
+                        80</span>
+                </div>
+            </div>
+
+            <div class="flashcard" onclick="flipCard()">
+                <div class="category-badge" id="fc-cat">Général</div>
+                <div class="fc-question" id="fc-q">Chargement...</div>
+                <div class="fc-answer" id="fc-a">...</div>
+                <div class="fc-hint">Cliquez pour révéler la réponse</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-outline" onclick="prevCard()">← Précédent</button>
+                <button class="btn-outline" onclick="nextCard()">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- 2. BASES & ARRAYS -->
+        <div id="bases" class="section">
+            <h3 class="drill-title">🏗️ Syntaxe & Tableaux (Le B.A.-BA)</h3>
+            <p class="drill-desc">Attention : toutes les variables commencent par <code>$</code> et les lignes finissent
+                par <code>;</code>.</p>
+
+            <div class="code-block">
+                <span class="cmt">// 1. Déclarer une variable string</span>
+                <span class="var">$nom</span> <input type="text" class="code-input" data-ans="="> "Jean";
+
+                <span class="cmt">// 2. Concaténation (coller deux chaînes avec un point)</span>
+                <span class="kwd">echo</span> "Bonjour " <input type="text" class="code-input" data-ans="."> <span
+                    class="var">$nom</span>;
+
+                <span class="cmt">// 3. Tableau associatif (Clé => Valeur)</span>
+                <span class="var">$user</span> = [
+                "nom" <input type="text" class="code-input" data-ans="=>"> "Jean",
+                "age" => 25
+                ];
+
+                <span class="cmt">// 4. Boucle pour parcourir le tableau</span>
+                <span class="kwd">foreach</span> (<span class="var">$user</span> <span class="kwd">as</span> <span
+                    class="var">$key</span> => <span class="var">$value</span>) {
+                <span class="kwd">echo</span> <span class="var">$key</span> . ": " . <span class="var">$value</span>;
+                }
+
+                <span class="cmt">// 5. Vérifier si une clé existe</span>
+                <span class="kwd">if</span> (<span class="fn"><input type="text" class="code-input"
+                        data-ans="array_key_exists"></span>("email", <span class="var">$user</span>)) {
+                <span class="kwd">echo</span> "Email trouvé";
+                }
+            </div>
+            <button class="btn" onclick="checkCode('bases')">Vérifier Bases</button>
+            <span id="bases-result" class="result-msg"></span>
+        </div>
+
+        <!-- 3. FORMULAIRES & SECURITY -->
+        <div id="forms" class="section">
+            <h3 class="drill-title">📝 Superglobales & Sécurité (Critique !)</h3>
+            <p class="drill-desc">Ne jamais faire confiance aux données utilisateur (`$_POST`, `$_GET`).</p>
+
+            <div class="code-block">
+                <span class="cmt">// 1. Vérifier si le formulaire a été soumis (Méthode POST)</span>
+                <span class="kwd">if</span> (<span class="var">$_SERVER</span>['REQUEST_METHOD'] === <input type="text"
+                    class="code-input" data-ans="'POST'">) {
+
+                <span class="cmt">// 2. Récupérer le champ 'email' en toute sécurité</span>
+                <span class="cmt">// htmlspecialchars transforme &lt;script&gt; en texte inoffensif</span>
+                <span class="var">$email</span> = <span class="fn"><input type="text" class="code-input"
+                        data-ans="htmlspecialchars"></span>(<span class="var">$_POST</span>['email']);
+
+                <span class="cmt">// 3. Vérifier si le champ est vide</span>
+                <span class="kwd">if</span> (!<span class="fn"><input type="text" class="code-input"
+                        data-ans="empty"></span>(<span class="var">$email</span>)) {
+
+                <span class="cmt">// 4. Hacher le mot de passe (JAMAIS en clair !)</span>
+                <span class="var">$passHash</span> = <span class="fn"><input type="text" class="code-input"
+                        data-ans="password_hash"></span>(<span class="var">$password</span>, PASSWORD_DEFAULT);
+
+                <span class="kwd">echo</span> "Utilisateur sécurisé !";
+                }
+                }
+            </div>
+            <button class="btn" onclick="checkCode('forms')">Vérifier Sécurité</button>
+            <span id="forms-result" class="result-msg"></span>
+        </div>
+
+        <!-- 4. PDO (DATABASE) -->
+        <div id="pdo" class="section">
+            <h3 class="drill-title">🗄️ Base de Données (PDO Modern)</h3>
+            <p class="drill-desc">Oubliez <code>mysql_query</code>. Utilisez PDO et les requêtes préparées pour éviter
+                les injections SQL.</p>
+
+            <div class="code-block">
+                <span class="cmt">// 1. Connexion à la BDD</span>
+                <span class="var">$pdo</span> = <span class="kwd">new</span> <span
+                    class="cls">PDO</span>("mysql:host=localhost;dbname=test", "root", "");
+
+                <span class="cmt">// 2. Préparer la requête (Le ? remplace la variable dangereuse)</span>
+                <span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn"><input type="text"
+                        class="code-input" data-ans="prepare"></span>("SELECT * FROM users WHERE id = ?");
+
+                <span class="cmt">// 3. Exécuter en passant les variables dans un tableau</span>
+                <span class="var">$stmt</span>-><span class="fn"><input type="text" class="code-input"
+                        data-ans="execute"></span>([<span class="var">$id</span>]);
+
+                <span class="cmt">// 4. Récupérer le résultat sous forme de tableau associatif</span>
+                <span class="var">$user</span> = <span class="var">$stmt</span>-><span class="fn"><input type="text"
+                        class="code-input" data-ans="fetch"></span>(PDO::FETCH_ASSOC);
+
+                <span class="cmt">// 5. Compter les lignes trouvées</span>
+                <span class="var">$count</span> = <span class="var">$stmt</span>-><span class="fn"><input type="text"
+                        class="code-input" data-ans="rowCount"></span>();
+            </div>
+            <button class="btn" onclick="checkCode('pdo')">Vérifier PDO</button>
+            <span id="pdo-result" class="result-msg"></span>
+        </div>
+
+        <!-- 5. POO (CLASSES) -->
+        <div id="poo" class="section">
+            <h3 class="drill-title">🏛️ Programmation Orientée Objet</h3>
+            <p class="drill-desc">Structurer son code avec des classes, propriétés et visibilité.</p>
+
+            <div class="code-block">
+                <span class="cmt">// 1. Définir une classe</span>
+                <span class="kwd"><input type="text" class="code-input" data-ans="class"></span> User {
+
+                <span class="cmt">// 2. Propriété privée (accessible uniquement dans la classe)</span>
+                <span class="kwd"><input type="text" class="code-input" data-ans="private"></span> <span
+                    class="var">$nom</span>;
+
+                <span class="cmt">// 3. Constructeur (méthode magique)</span>
+                <span class="kwd">public</span> <span class="kwd">function</span> <span class="fn"><input type="text"
+                        class="code-input" data-ans="__construct"></span>(<span class="var">$nom</span>) {
+                <span class="cmt">// 4. Accéder à la propriété de l'objet courant</span>
+                <span class="var"><input type="text" class="code-input" data-ans="$this"></span>->nom = <span
+                    class="var">$nom</span>;
+                }
+
+                <span class="kwd">public</span> <span class="kwd">function</span> getNom() {
+                <span class="kwd">return</span> <span class="var">$this</span>->nom;
+                }
+                }
+
+                <span class="cmt">// 5. Instancier (Créer) un nouvel objet</span>
+                <span class="var">$user1</span> = <span class="kwd"><input type="text" class="code-input"
+                        data-ans="new"></span> User("Alice");
+            </div>
+            <button class="btn" onclick="checkCode('poo')">Vérifier POO</button>
+            <span id="poo-result" class="result-msg"></span>
+        </div>
+
+        <!-- 6. 1000 LABS CHALLENGE -->
+        <div id="labs" class="section">
+            <div class="lab-header">
+                <div>
+                    <h3 style="margin:0; color:#fff;">🧪 GÉNÉRATEUR INFINI DE LABS PHP</h3>
+                    <small style="color:#bd93f9;">Entraînement procédural aléatoire</small>
+                </div>
+                <div style="text-align:right;">
+                    <div class="lab-progress" id="lab-count-display">0 / 1000</div>
+                    <div style="font-size:0.8rem; color:#f8f8f2;">LABS COMPLÉTÉS</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="lab-progress-bar"></div>
+            </div>
+
+            <div class="lab-container">
+                <div id="lab-question-area" class="lab-question">
+                    Chargement du lab...
+                </div>
+
+                <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <input type="text" id="lab-input" class="lab-input" placeholder="Code PHP..." autocomplete="off">
+                    <button class="btn-lab" onclick="checkLab()">VALIDER</button>
+                </div>
+
+                <p id="lab-feedback" style="height:20px; font-weight:bold; margin-top:20px;"></p>
+                <button class="btn-outline" style="margin-top:20px; border-color:#6272a4; color:#bd93f9;"
+                    onclick="generateLab()">Passer cette question</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log("PHP Training Script Loaded");
+
+        // --- DATABASE PHP COMPLETE ---
+        const phpCards = [
+            // BASES
+            { cat: "Bases", q: "Caractère obligatoire devant une variable", a: "$" },
+            { cat: "Bases", q: "Symbole de concaténation (coller chaînes)", a: "." },
+            { cat: "Bases", q: "Fonction pour afficher du texte", a: "echo ou print" },
+            { cat: "Bases", q: "Fonction pour compter les éléments d'un tableau", a: "count()" },
+            { cat: "Bases", q: "Vérifier si une variable existe", a: "isset()" },
+            { cat: "Bases", q: "Vérifier si une variable est vide", a: "empty()" },
+
+            // SUPERGLOBALES & WEB
+            { cat: "Web", q: "Tableau des données URL (Query Params)", a: "$_GET" },
+            { cat: "Web", q: "Tableau des données Formulaire (Caché)", a: "$_POST" },
+            { cat: "Web", q: "Tableau pour stocker des infos utilisateur persistantes", a: "$_SESSION" },
+            { cat: "Web", q: "Fonction pour démarrer les sessions", a: "session_start()" },
+            { cat: "Web", q: "Rediriger l'utilisateur vers une autre page", a: "header('Location: ...')" },
+
+            // SÉCURITÉ
+            { cat: "Sécurité", q: "Convertir les caractères spéciaux en HTML (Anti-XSS)", a: "htmlspecialchars()" },
+            { cat: "Sécurité", q: "Hacher un mot de passe", a: "password_hash()" },
+            { cat: "Sécurité", q: "Vérifier un mot de passe haché", a: "password_verify()" },
+            { cat: "Sécurité", q: "Technique pour éviter les Injections SQL", a: "Requêtes Préparées (PDO)" },
+
+            // PDO (BDD)
+            { cat: "PDO", q: "Méthode pour préparer une requête SQL", a: "prepare()" },
+            { cat: "PDO", q: "Méthode pour lancer la requête préparée", a: "execute()" },
+            { cat: "PDO", q: "Méthode pour récupérer UNE ligne de résultat", a: "fetch()" },
+            { cat: "PDO", q: "Méthode pour récupérer TOUTES les lignes", a: "fetchAll()" },
+
+            // POO
+            { cat: "POO", q: "Mot-clé pour l'objet courant", a: "$this" },
+            { cat: "POO", q: "Méthode constructeur", a: "__construct()" },
+            { cat: "POO", q: "Visibilité accessible uniquement dans la classe", a: "private" },
+            { cat: "POO", q: "Visibilité accessible partout", a: "public" },
+            { cat: "POO", q: "Créer une instance de classe", a: "new" }
+        ];
+
+        // --- LOGIC ---
+        let cards = [...phpCards];
+        let currentIdx = 0;
+        let isRandom = false;
+
+        // Elements
+        let qEl, aEl, catEl, countEl;
+
+        function updateCard() {
+            if (!qEl) return;
+
+            const c = cards[currentIdx];
+            qEl.innerText = c.q;
+            aEl.innerText = c.a;
+            catEl.innerText = c.cat;
+
+            // Dynamic Colors
+            const colors = {
+                "Bases": "#777BB4",
+                "Web": "#16a34a",
+                "Sécurité": "#dc2626",
+                "PDO": "#FFD43B",
+                "POO": "#bd93f9"
+            };
+            catEl.style.backgroundColor = colors[c.cat] || "#333";
+            catEl.style.color = (c.cat === "PDO") ? "#333" : "#fff";
+
+            aEl.style.display = 'none';
+            countEl.innerText = `${currentIdx + 1} / ${cards.length}`;
+        }
+
+        window.flipCard = function () {
+            if (!aEl) return;
+            aEl.style.display = (aEl.style.display === 'none') ? 'block' : 'none';
+        }
+
+        window.nextCard = function () {
+            currentIdx = (currentIdx + 1) % cards.length;
+            updateCard();
+        }
+
+        window.prevCard = function () {
+            currentIdx = (currentIdx - 1 + cards.length) % cards.length;
+            updateCard();
+        }
+
+        window.toggleRandom = function () {
+            isRandom = !isRandom;
+            const statusSpan = document.getElementById('rand-status');
+
+            if (!statusSpan) return;
+
+            if (isRandom) {
+                cards = [...phpCards].sort(() => Math.random() - 0.5);
+                statusSpan.innerText = "ON";
+                statusSpan.style.color = "#16a34a";
+            } else {
+                cards = [...phpCards];
+                statusSpan.innerText = "OFF";
+                statusSpan.style.color = "inherit";
+            }
+            currentIdx = 0;
+            updateCard();
+        }
+
+        window.showTab = function (id) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            const target = document.getElementById(id);
+            if (target) target.classList.add('active');
+
+            const tabs = ['flashcards', 'bases', 'forms', 'pdo', 'poo', 'labs'];
+            const idx = tabs.indexOf(id);
+            const btns = document.querySelectorAll('.tab-btn');
+            if (idx >= 0 && btns[idx]) btns[idx].classList.add('active');
+
+            if (id === 'labs') {
+                loadLabProgress();
+                generateLab();
+            }
+        }
+
+        window.checkCode = function (sectionId) {
+            const inputs = document.querySelectorAll(`#${sectionId} .code-input`);
+            let errors = 0;
+
+            inputs.forEach(inp => {
+                const userVal = inp.value.trim();
+                const correctVal = inp.getAttribute('data-ans');
+
+                // Mode Expert: Si la réponse attendue contient des quotes, l'utilisateur DOIT les mettre.
+                const hasQuotes = correctVal.includes("'") || correctVal.includes('"');
+
+                let cmdUser = userVal.toLowerCase().replace(/\s/g, '');
+                let cmdCorrect = correctVal.toLowerCase().replace(/\s/g, '');
+
+                if (hasQuotes) {
+                    // Normalisation: on accepte ' ou " mais il faut qu'il y en ait
+                    // On remplace tout par des simple quotes pour comparer
+                    cmdUser = cmdUser.replace(/"/g, "'");
+                    cmdCorrect = cmdCorrect.replace(/"/g, "'");
+                } else {
+                    // Si pas de quotes attendues, on nettoie tout pour éviter les faux positifs
+                    cmdUser = cmdUser.replace(/"/g, "").replace(/'/g, "");
+                    cmdCorrect = cmdCorrect.replace(/"/g, "").replace(/'/g, "");
+                }
+
+                if (cmdUser === cmdCorrect) {
+                    inp.classList.add('correct');
+                    inp.classList.remove('incorrect');
+                } else {
+                    inp.classList.add('incorrect');
+                    inp.classList.remove('correct');
+                    errors++;
+                }
+            });
+
+            const resEl = document.getElementById(`${sectionId}-result`);
+            if (resEl) {
+                if (errors === 0) {
+                    resEl.innerText = "✨ Code PHP Valide ! (Expert Mode)";
+                    resEl.style.color = "#16a34a";
+                } else {
+                    resEl.innerText = `⚠️ ${errors} erreurs. Respectez la syntaxe stricte.`;
+                    resEl.style.color = "#dc2626";
+                }
+            }
+        }
+
+        // --- 1000 LABS LOGIC ---
+        let currentLabAnswer = "";
+        let labsCompleted = 0;
+
+        function loadLabProgress() {
+            const saved = localStorage.getItem('phpLabsCompleted');
+            if (saved) {
+                labsCompleted = parseInt(saved, 10);
+            }
+            updateLabUI();
+        }
+
+        function saveLabProgress() {
+            localStorage.setItem('phpLabsCompleted', labsCompleted);
+            updateLabUI();
+        }
+
+        function updateLabUI() {
+            const disp = document.getElementById('lab-count-display');
+            if (disp) disp.textContent = `${labsCompleted} / 1000`;
+
+            const bar = document.getElementById('lab-progress-bar');
+            if (bar) {
+                const percent = Math.min(100, (labsCompleted / 1000) * 100);
+                bar.style.width = `${percent}%`;
+            }
+        }
+
+        window.generateLab = function () {
+            const feedback = document.getElementById('lab-feedback');
+            const input = document.getElementById('lab-input');
+            if (!input) return;
+
+            feedback.textContent = "";
+            input.value = "";
+            input.classList.remove('correct', 'incorrect');
+            input.style.borderColor = "#6272a4";
+
+            // Patterns de génération PHP
+            const types = ['var_syntax', 'array_func', 'string_concat', 'superglobal', 'pdo_method'];
+            const type = types[Math.floor(Math.random() * types.length)];
+
+            let questionText = "";
+            let answer = "";
+
+            if (type === 'var_syntax') {
+                const vars = ['prix', 'nom', 'age', 'total', 'quantite'];
+                const idx = Math.floor(Math.random() * vars.length);
+                questionText = `Comment écrire la variable <span style="color:#bd93f9">${vars[idx]}</span> en PHP ?`;
+                answer = `$${vars[idx]}`;
+            }
+            else if (type === 'array_func') {
+                const scenarios = [
+                    { q: "Fonction pour compter les éléments d'un tableau ?", a: "count" },
+                    { q: "Fonction pour vérifier si une clé existe ?", a: "array_key_exists" },
+                    { q: "Fonction pour vérifier si une valeur existe ?", a: "in_array" },
+                    { q: "Fonction pour fusionner deux tableaux ?", a: "array_merge" }
+                ];
+                const sc = scenarios[Math.floor(Math.random() * scenarios.length)];
+                questionText = sc.q;
+                answer = sc.a;
+            }
+            else if (type === 'string_concat') {
+                questionText = `Quel est le symbole de concaténation en PHP ?`;
+                answer = ".";
+            }
+            else if (type === 'superglobal') {
+                const scenarios = [
+                    { q: "Superglobale pour les données d'URL ?", a: "$_GET" },
+                    { q: "Superglobale pour les formulaires (invisible) ?", a: "$_POST" },
+                    { q: "Superglobale pour les sessions ?", a: "$_SESSION" }
+                ];
+                const sc = scenarios[Math.floor(Math.random() * scenarios.length)];
+                questionText = sc.q;
+                answer = sc.a;
+            }
+            else if (type === 'pdo_method') {
+                const scenarios = [
+                    { q: "PDO: Méthode pour préparer une requête ?", a: "prepare" },
+                    { q: "PDO: Méthode pour exécuter la requête ?", a: "execute" },
+                    { q: "PDO: Méthode pour lire une ligne de résultat ?", a: "fetch" },
+                    { q: "PDO: Méthode pour lire TOUTES les lignes ?", a: "fetchAll" }
+                ];
+                const sc = scenarios[Math.floor(Math.random() * scenarios.length)];
+                questionText = sc.q;
+                answer = sc.a;
+            }
+
+            const area = document.getElementById('lab-question-area');
+            if (area) area.innerHTML = questionText;
+            currentLabAnswer = answer;
+        }
+
+        window.checkLab = function () {
+            const input = document.getElementById('lab-input');
+            const feedback = document.getElementById('lab-feedback');
+
+            if (!input || !feedback) return;
+
+            let userVal = input.value.trim().toLowerCase();
+            // Remove parens if user added function() instead of just function
+            userVal = userVal.replace("()", "");
+
+            let correctVal = currentLabAnswer.toLowerCase();
+
+            if (userVal === correctVal) {
+                input.style.borderColor = "#50fa7b";
+                feedback.style.color = "#50fa7b";
+                feedback.textContent = "CORRECT ! +1 Lab";
+                labsCompleted++;
+                saveLabProgress();
+
+                setTimeout(() => {
+                    generateLab();
+                }, 1000);
+            } else {
+                input.style.borderColor = "#ff5555";
+                feedback.style.color = "#ff5555";
+                feedback.textContent = "Incorrect. Réponse : " + currentLabAnswer;
+            }
+        }
+
+        // Allow Enter key
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "Enter") {
+                const labsSection = document.getElementById('labs');
+                if (labsSection && labsSection.classList.contains('active')) {
+                    window.checkLab();
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            qEl = document.getElementById('fc-q');
+            aEl = document.getElementById('fc-a');
+            catEl = document.getElementById('fc-cat');
+            countEl = document.getElementById('card-counter');
+
+            updateCard();
+        });
+    </script>
+
+</body>
+
+</html>

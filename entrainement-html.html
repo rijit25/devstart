@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrainement Intensif HTML - NIVEAU EXPERT</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text-cat: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-style: italic;
+        }
+
+        .progress {
+            text-align: right;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        /* Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #e5e7eb;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Content Area */
+        .section {
+            display: none;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Flashcards */
+        .flashcard {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s, border-color 0.2s;
+            margin-bottom: 20px;
+            background: #fafafa;
+            position: relative;
+            user-select: none;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .flashcard:active {
+            transform: translateY(1px);
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #9ca3af;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .fc-question {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        .fc-answer {
+            font-size: 1.6rem;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+            margin-top: 15px;
+            display: none;
+            border-top: 1px dashed #ccc;
+            padding-top: 15px;
+            width: 100%;
+        }
+
+        /* Code Blanks */
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            white-space: pre;
+            font-size: 0.95rem;
+        }
+
+        .code-input {
+            background: #3c3c3c;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        .code-input.correct {
+            border-color: var(--success);
+            background: #133518;
+            color: #4ade80;
+        }
+
+        .code-input.incorrect {
+            border-color: var(--error);
+            background: #451515;
+        }
+
+        /* Architecture Visualizer */
+        .arch-container {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+
+        .arch-box {
+            border: 2px solid #333;
+            padding: 10px;
+            margin: 5px;
+            position: relative;
+        }
+
+        .arch-label {
+            background: #333;
+            color: #fff;
+            padding: 2px 5px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        /* Buttons */
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .secondary-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: var(--secondary);
+        }
+
+        .nav-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        /* --- 1000 LABS STYLES --- */
+        #labs {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #334155;
+        }
+
+        .lab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .lab-progress {
+            font-family: 'Consolas', monospace;
+            font-size: 2rem;
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        .lab-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .lab-question {
+            font-size: 1.6rem;
+            margin-bottom: 40px;
+            color: #fff;
+            font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .lab-input {
+            background: #334155;
+            border: 2px solid #475569;
+            padding: 15px 25px;
+            color: #fff;
+            font-family: 'Consolas', monospace;
+            font-size: 1.3rem;
+            border-radius: 8px;
+            margin-right: 15px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .lab-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 15px #f59e0b;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #334155;
+            border-radius: 6px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: #f59e0b;
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px #f59e0b;
+        }
+
+        .btn-lab {
+            background: #f59e0b;
+            color: #fff;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .btn-lab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #f59e0b;
+            color: #fff;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>⚡ HTML Expert : Architecture & Rendu</h1>
+            <p class="subtitle">Du PDF à Figma : Maîtrisez la Structure</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('flashcards')">🧠 Flashcards (Avec Sémantique)</button>
+            <button class="tab-btn" onclick="showTab('figma')">📐 Architecture (Figma)</button>
+            <button class="tab-btn" onclick="showTab('table_complex')">📊 Tableaux Complexes</button>
+            <button class="tab-btn" onclick="showTab('maps')">🗺️ Défi Google Maps</button>
+            <button class="tab-btn" style="background:#fef3c7; color:#d97706;" onclick="showTab('labs')">🧪 DÉFI 1000
+                LABS</button>
+        </div>
+
+        <!-- SECTION 1: FLASHCARDS -->
+        <div id="flashcards" class="section active">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="margin:0">Devinez la balise</h3>
+                <div style="display:flex; gap:10px;">
+                    <button class="secondary-btn" onclick="toggleRandom()">🔀 Aléatoire: <span
+                            id="rand-status">OFF</span></button>
+                    <div class="progress" id="card-counter">1 / 65</div>
+                </div>
+            </div>
+
+            <div class="flashcard" onclick="flipCard()">
+                <div class="category-badge" id="fc-cat">Structure</div>
+                <div class="fc-question" id="fc-q">Chargement...</div>
+                <div class="fc-answer" id="fc-a">...</div>
+                <div class="fc-hint">Cliquez pour révéler la réponse</div>
+            </div>
+
+            <div class="nav-btns">
+                <button class="action-btn" onclick="prevCard()">← Précédent</button>
+                <button class="action-btn" onclick="nextCard()">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: ARCHITECTURE / FIGMA -->
+        <div id="figma" class="section">
+            <h3>🏗️ Architecture & Sémantique (De Figma au Code)</h3>
+            <p>Pour copier une page Figma, il faut comprendre les boîtes imbriquées. Complétez cette structure d'une
+                page de blog moderne.</p>
+
+            <div class="code-block">&lt;body&gt;
+                &lt;!-- Barre de navigation tout en haut --&gt;
+                &lt;<input type="text" class="code-input" data-ans="header">&gt;
+                &lt;img src="logo.png" alt="Logo"&gt;
+                &lt;<input type="text" class="code-input" data-ans="nav">&gt;
+                &lt;a href="#"&gt;Accueil&lt;/a&gt;
+                &lt;a href="#"&gt;Contact&lt;/a&gt;
+                &lt;/nav&gt;
+                &lt;/header&gt;
+
+                &lt;!-- Contenu principal de la page --&gt;
+                &lt;<input type="text" class="code-input" data-ans="main">&gt;
+
+                &lt;!-- Une section spécifique (ex: Derniers articles) --&gt;
+                &lt;<input type="text" class="code-input" data-ans="section">&gt;
+                &lt;h2&gt;Nos Articles&lt;/h2&gt;
+
+                &lt;!-- Un article autonome (carte article) --&gt;
+                &lt;<input type="text" class="code-input" data-ans="article">&gt;
+                &lt;img src="post1.jpg"&gt;
+                &lt;h3&gt;Titre Article&lt;/h3&gt;
+                &lt;p&gt;Résumé...&lt;/p&gt;
+                &lt;!-- Bouton d'action --&gt;
+                &lt;<input type="text" class="code-input" data-ans="button">&gt;Lire la suite&lt;/button&gt;
+                &lt;/article&gt;
+
+                &lt;/section&gt;
+
+                &lt;!-- Barre latérale (Publicité, Liens rapides) --&gt;
+                &lt;<input type="text" class="code-input" data-ans="aside">&gt;
+                &lt;p&gt;Pub ici&lt;/p&gt;
+                &lt;/aside&gt;
+
+                &lt;/main&gt;
+
+                &lt;!-- Pied de page --&gt;
+                &lt;<input type="text" class="code-input" data-ans="footer">&gt;
+                &lt;p&gt;© 2024 Mon Site&lt;/p&gt;
+                &lt;/footer&gt;
+                &lt;/body&gt;</div>
+
+            <button class="action-btn" onclick="checkCode('figma')">Vérifier l'Architecture</button>
+            <p id="figma-result" style="margin-top:10px; font-weight:bold;"></p>
+        </div>
+
+        <!-- SECTION 3: TABLEAUX COMPLEXES -->
+        <div id="table_complex" class="section">
+            <h3>📊 Le Boss des Tableaux (Structure Complexe)</h3>
+            <p>Reproduisez ce tableau de facturation avancé. Attention aux fusions et aux sections de tableau (Head,
+                Body, Foot) !</p>
+            <p><em>Imaginez : Une ligne de titre qui prend tout le haut, puis des articles, et un total en bas.</em></p>
+
+            <div class="code-block">&lt;table border="1"&gt;
+                &lt;!-- En-tête structurelle du tableau --&gt;
+                &lt;<input type="text" class="code-input" data-ans="thead">&gt;
+                &lt;tr&gt;
+                &lt;!-- Cette cellule prend 3 colonnes de large --&gt;
+                &lt;th <input type="text" class="code-input" data-ans="colspan">="3"&gt;FACTURE N°123&lt;/th&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                &lt;th&gt;Produit&lt;/th&gt;
+                &lt;th&gt;Quantité&lt;/th&gt;
+                &lt;th&gt;Prix&lt;/th&gt;
+                &lt;/tr&gt;
+                &lt;/thead&gt;
+
+                &lt;!-- Corps du tableau --&gt;
+                &lt;<input type="text" class="code-input" data-ans="tbody">&gt;
+                &lt;tr&gt;
+                &lt;td&gt;Ordinateur&lt;/td&gt;
+                &lt;td&gt;1&lt;/td&gt;
+                &lt;td&gt;1000€&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                &lt;!-- Cette cellule fusionne avec la ligne du dessous (Pack) --&gt;
+                &lt;td <input type="text" class="code-input" data-ans="rowspan">="2"&gt;Pack Accessoires&lt;/td&gt;
+                &lt;td&gt;1 (Souris)&lt;/td&gt;
+                &lt;td&gt;20€&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                &lt;!-- Cellule "Pack" est déjà là grâce au rowspan, on ne la remet pas --&gt;
+                &lt;td&gt;1 (Clavier)&lt;/td&gt;
+                &lt;td&gt;30€&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;/tbody&gt;
+
+                &lt;!-- Pied de tableau (Totaux) --&gt;
+                &lt;<input type="text" class="code-input" data-ans="tfoot">&gt;
+                &lt;tr&gt;
+                &lt;th colspan="2"&gt;TOTAL À PAYER&lt;/th&gt;
+                &lt;td&gt;1050€&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;/tfoot&gt;
+                &lt;/table&gt;</div>
+
+            <button class="action-btn" onclick="checkCode('table_complex')">Vérifier le Tableau</button>
+            <p id="table_complex-result" style="margin-top:10px; font-weight:bold;"></p>
+        </div>
+
+        <!-- SECTION 4: GOOGLE MAPS DRILL -->
+        <div id="maps" class="section">
+            <h3>🗺️ Le Défi Google Maps (Spécifique Examen)</h3>
+            <p>Rappel rapide des paramètres URL.</p>
+
+            <div class="code-block">&lt;iframe
+                src="https://maps.google.com/maps?
+                <input type="text" class="code-input" data-ans="saddr">=Paris&
+                <input type="text" class="code-input" data-ans="daddr">=Lyon&
+                <input type="text" class="code-input" data-ans="z">=10&
+                <input type="text" class="code-input" data-ans="output">=embed"&gt;
+                &lt;/iframe&gt;
+            </div>
+            <button class="action-btn" onclick="checkCode('maps')">Vérifier</button>
+            <p id="maps-result" style="margin-top:10px; font-weight:bold;"></p>
+        </div>
+
+        <!-- SECTION 5: 1000 LABS CHALLENGE -->
+        <div id="labs" class="section">
+            <div class="lab-header">
+                <div>
+                    <h3 style="margin:0; color:#fff;">🧪 GÉNÉRATEUR INFINI DE LABS HTML</h3>
+                    <small style="color:#f59e0b;">Entraînement Balises & Attributs</small>
+                </div>
+                <div style="text-align:right;">
+                    <div class="lab-progress" id="lab-count-display">0 / 1000</div>
+                    <div style="font-size:0.8rem; color:#f8f8f2;">LABS COMPLÉTÉS</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="lab-progress-bar"></div>
+            </div>
+
+            <div class="lab-container">
+                <div id="lab-question-area" class="lab-question">
+                    Chargement...
+                </div>
+
+                <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <input type="text" id="lab-input" class="lab-input" placeholder="Code HTML..." autocomplete="off">
+                    <button class="btn-lab" onclick="checkLab()">VALIDER</button>
+                </div>
+
+                <p id="lab-feedback" style="height:20px; font-weight:bold; margin-top:20px;"></p>
+                <button class="secondary-btn" style="margin-top:20px;" onclick="generateLab()">Passer cette
+                    question</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- NOUVELLE DATA ENRICHIE (65 Cartes) ---
+        const allCards = [
+            // --- 1. ARCHITECTURE & SÉMANTIQUE (Nouveau) ---
+            { cat: "Architecture", q: "Balise générique de type 'Bloc' (la brique de base)", a: "<div>" },
+            { cat: "Architecture", q: "Balise générique de type 'Ligne' (pour colorer un mot)", a: "<span>" },
+            { cat: "Architecture", q: "Zone d'en-tête de la page ou d'une section", a: "<header>" },
+            { cat: "Architecture", q: "Zone de navigation (menu, liens)", a: "<nav>" },
+            { cat: "Architecture", q: "Contenu principal de la page (unique par page)", a: "<main>" },
+            { cat: "Architecture", q: "Zone de pied de page (copyright, contacts)", a: "<footer>" },
+            { cat: "Architecture", q: "Section thématique d'un document", a: "<section>" },
+            { cat: "Architecture", q: "Contenu autonome (article de blog, post)", a: "<article>" },
+            { cat: "Architecture", q: "Contenu à côté (barre latérale, pub)", a: "<aside>" },
+            { cat: "Architecture", q: "Balise pour un bouton cliquable (interface)", a: "<button>" },
+
+            // --- 2. STRUCTURE DE BASE ---
+            { cat: "Structure", q: "Déclaration obligatoire de HTML5 (1ère ligne)", a: "<!DOCTYPE html>" },
+            { cat: "Structure", q: "Racine du document HTML", a: "<html>" },
+            { cat: "Structure", q: "Conteneur des métadonnées (invisible)", a: "<head>" },
+            { cat: "Structure", q: "Corps de la page (contenu visible)", a: "<body>" },
+            { cat: "Structure", q: "Définit le titre de l'onglet", a: "<title>" },
+            { cat: "Structure", q: "Gère l'encodage des accents (UTF-8)", a: "<meta charset='utf-8'>" },
+            { cat: "Structure", q: "Lier une feuille CSS externe", a: "<link rel='stylesheet' ...>" },
+
+            // --- 3. TABLEAUX AVANCÉS ---
+            { cat: "Tableaux", q: "Conteneur principal du tableau", a: "<table>" },
+            { cat: "Tableaux", q: "Groupe de l'en-tête du tableau", a: "<thead>" },
+            { cat: "Tableaux", q: "Groupe du corps du tableau", a: "<tbody>" },
+            { cat: "Tableaux", q: "Groupe du pied du tableau", a: "<tfoot>" },
+            { cat: "Tableaux", q: "Ligne de tableau", a: "<tr>" },
+            { cat: "Tableaux", q: "Cellule d'en-tête (gras et centré)", a: "<th>" },
+            { cat: "Tableaux", q: "Cellule de donnée standard", a: "<td>" },
+            { cat: "Tableaux", q: "Fusion VERTICALE (mange les lignes du bas)", a: "rowspan='...'" },
+            { cat: "Tableaux", q: "Fusion HORIZONTALE (mange les colonnes à droite)", a: "colspan='...'" },
+
+            // --- 4. FORMULAIRES PRO ---
+            { cat: "Formulaires", q: "Conteneur de formulaire", a: "<form>" },
+            { cat: "Formulaires", q: "Attribut pour texte gris indicatif dans le champ", a: "placeholder='...'" },
+            { cat: "Formulaires", q: "Lier un texte à son input (clic ergonomique)", a: "<label for='...'>" },
+            { cat: "Formulaires", q: "Zone de saisie texte simple", a: "<input type='text'>" },
+            { cat: "Formulaires", q: "Zone mot de passe", a: "<input type='password'>" },
+            { cat: "Formulaires", q: "Bouton Radio (Choix unique)", a: "<input type='radio'>" },
+            { cat: "Formulaires", q: "Checkbox (Choix multiple)", a: "<input type='checkbox'>" },
+            { cat: "Formulaires", q: "Liste déroulante", a: "<select>" },
+            { cat: "Formulaires", q: "Option de liste", a: "<option>" },
+            { cat: "Formulaires", q: "Zone texte multi-lignes", a: "<textarea>" },
+            { cat: "Formulaires", q: "Grouper des champs", a: "<fieldset>" },
+            { cat: "Formulaires", q: "Titre du groupe de champs", a: "<legend>" },
+
+            // --- 5. TEXTE & FORMATAGE ---
+            { cat: "Texte", q: "Titre le plus important (H1)", a: "<h1>" },
+            { cat: "Texte", q: "Paragraphe", a: "<p>" },
+            { cat: "Texte", q: "Saut de ligne", a: "<br>" },
+            { cat: "Texte", q: "Séparation horizontale", a: "<hr>" },
+            { cat: "Texte", q: "Texte IMPORTANT (Gras sémantique)", a: "<strong>" },
+            { cat: "Texte", q: "Texte EMPHASE (Italique sémantique)", a: "<em>" },
+
+            // --- 6. LIENS & MÉDIAS ---
+            { cat: "Liens/Img", q: "Lien hypertexte", a: "<a href='...'>" },
+            { cat: "Liens/Img", q: "Ouvrir lien dans nouvel onglet", a: "target='_blank'" },
+            { cat: "Liens/Img", q: "Image", a: "<img src='...'>" },
+            { cat: "Liens/Img", q: "Texte alternatif image (SEO/Accessibilité)", a: "alt='...'" },
+            { cat: "Divers", q: "Cadre pour inclure une autre page/carte", a: "<iframe>" }
+        ];
+
+        // --- LOGIC ---
+        let cards = [...allCards];
+        let currentCardIndex = 0;
+        let isRandom = false;
+
+        // Elements
+        let qEl, aEl, catEl, countEl, randStatusEl;
+
+        function updateCard() {
+            if (!qEl) return;
+
+            const card = cards[currentCardIndex];
+            qEl.textContent = card.q;
+            aEl.textContent = card.a;
+
+            if (catEl) {
+                catEl.textContent = card.cat;
+                // Colors Updated
+                const colors = {
+                    "Architecture": "#000000", /* Le Noir pour l'Architecte */
+                    "Structure": "#2563eb",
+                    "Texte": "#059669",
+                    "Listes": "#d97706",
+                    "Liens/Img": "#7c3aed",
+                    "Tableaux": "#db2777",
+                    "Formulaires": "#dc2626",
+                    "Divers": "#4b5563"
+                };
+                catEl.style.backgroundColor = colors[card.cat] || "#9ca3af";
+            }
+
+            aEl.style.display = 'none';
+            if (countEl) countEl.textContent = `${currentCardIndex + 1} / ${cards.length}`;
+        }
+
+        // Initialize Global Functions
+        window.flipCard = function () {
+            if (aEl) aEl.style.display = aEl.style.display === 'none' ? 'block' : 'none';
+        };
+
+        window.nextCard = function () {
+            currentCardIndex = (currentCardIndex + 1) % cards.length;
+            updateCard();
+        };
+
+        window.prevCard = function () {
+            currentCardIndex = (currentCardIndex - 1 + cards.length) % cards.length;
+            updateCard();
+        };
+
+        window.toggleRandom = function () {
+            isRandom = !isRandom;
+            if (randStatusEl) {
+                randStatusEl.textContent = isRandom ? "ON" : "OFF";
+                randStatusEl.style.color = isRandom ? "#16a34a" : "inherit";
+            }
+
+            if (isRandom) {
+                cards = [...allCards].sort(() => Math.random() - 0.5);
+            } else {
+                cards = [...allCards];
+            }
+            currentCardIndex = 0;
+            updateCard();
+        };
+
+        window.showTab = function (tabId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            const section = document.getElementById(tabId);
+            if (section) section.classList.add('active');
+
+            const btns = document.querySelectorAll('.tab-btn');
+            // Simple mapping based on order
+            if (tabId === 'flashcards' && btns[0]) btns[0].classList.add('active');
+            if (tabId === 'figma' && btns[1]) btns[1].classList.add('active');
+            if (tabId === 'table_complex' && btns[2]) btns[2].classList.add('active');
+            if (tabId === 'maps' && btns[3]) btns[3].classList.add('active');
+        };
+
+        window.checkCode = function (sectionId) {
+            const inputs = document.querySelectorAll(`#${sectionId} .code-input`);
+            let allCorrect = true;
+
+            inputs.forEach(input => {
+                const userVal = input.value.trim().toLowerCase();
+                const correctVal = input.getAttribute('data-ans').toLowerCase();
+
+                if (userVal === correctVal) {
+                    input.classList.add('correct');
+                    input.classList.remove('incorrect');
+                } else {
+                    input.classList.add('incorrect');
+                    input.classList.remove('correct');
+                    allCorrect = false;
+                }
+            });
+
+            const resultEl = document.getElementById(`${sectionId}-result`);
+            if (resultEl) {
+                if (allCorrect) {
+                    resultEl.textContent = "✅ Excellent ! Code parfait.";
+                    resultEl.style.color = "green";
+                } else {
+                    resultEl.textContent = "❌ Il y a des erreurs. Vérifiez la structure.";
+                    resultEl.style.color = "red";
+                }
+            }
+        };
+
+        // Main Init
+        document.addEventListener('DOMContentLoaded', () => {
+            qEl = document.getElementById('fc-q');
+            aEl = document.getElementById('fc-a');
+            catEl = document.getElementById('fc-cat');
+            countEl = document.getElementById('card-counter');
+            randStatusEl = document.getElementById('rand-status');
+
+            updateCard();
+        });
+
+    </script>
+    <script>
+        // --- 1000 LABS LOGIC (HTML) ---
+        let currentLabAnswer = "";
+        let labsCompleted = 0;
+
+        function loadLabProgress() {
+            const saved = localStorage.getItem('htmlLabsCompleted');
+            if (saved) {
+                labsCompleted = parseInt(saved, 10);
+            }
+            updateLabUI();
+        }
+
+        function saveLabProgress() {
+            localStorage.setItem('htmlLabsCompleted', labsCompleted);
+            updateLabUI();
+        }
+
+        function updateLabUI() {
+            const disp = document.getElementById('lab-count-display');
+            if (disp) disp.textContent = `${labsCompleted} / 1000`;
+
+            const bar = document.getElementById('lab-progress-bar');
+            if (bar) {
+                const percent = Math.min(100, (labsCompleted / 1000) * 100);
+                bar.style.width = `${percent}%`;
+            }
+        }
+
+        window.generateLab = function () {
+            const feedback = document.getElementById('lab-feedback');
+            const input = document.getElementById('lab-input');
+            if (!input) return;
+
+            feedback.textContent = "";
+            input.value = "";
+            input.classList.remove('correct', 'incorrect');
+            input.style.borderColor = "#475569";
+
+            // Logic to pick a question
+            const card = allCards[Math.floor(Math.random() * allCards.length)];
+
+            let displayQ = card.q;
+            let expected = card.a;
+
+            // Ensure the answer is just the tag name or attribute for the input
+            // Most flashcards have answers like "<div>" or "<img src='...'>"
+            // We want the user to type the tag or attribute.
+
+            // Heuristic:
+            if (expected.startsWith('<') && expected.endsWith('>')) {
+                // It's a tag, e.g. "<div>"
+                displayQ = `Quelle balise pour : <span style="color:#f59e0b">${displayQ}</span> ?`;
+            } else if (expected.includes('=')) {
+                // It's an attribute, e.g. "src='...'"
+                // We want just the attribute name mostly? Or the full thing?
+                // Let's ask for the attribute name if it looks like attr='...'
+                const parts = expected.split('=');
+                const attr = parts[0].trim();
+                if (Math.random() > 0.5) {
+                    displayQ = `Quel attribut pour : <span style="color:#f59e0b">${displayQ}</span> ?`;
+                    expected = attr;
+                } else {
+                    displayQ = `Comment écrire l'attribut : <span style="color:#f59e0b">${displayQ}</span> ?`;
+                    // keep expected as is (e.g. src='...') OR simplify.
+                    // Let's keep it simple: just the attribute name is safer for drills unless we parse complexly.
+                    expected = attr;
+                }
+            }
+
+            document.getElementById('lab-question-area').innerHTML = displayQ;
+            // Clean expected answer (remove < > if user types just div)
+            currentLabAnswer = expected;
+        }
+
+        window.checkLab = function () {
+            const input = document.getElementById('lab-input');
+            const feedback = document.getElementById('lab-feedback');
+
+            let userVal = input.value.trim().toLowerCase();
+            let correctVal = currentLabAnswer.toLowerCase();
+
+            // Normalization: 
+            // If correct is "<div>", allow "div" or "<div>"
+            // If correct is "src", allow "src" or 'src="..."' ? No just src.
+
+            if (correctVal.startsWith('<') && correctVal.endsWith('>')) {
+                const tagOnly = correctVal.replace('<', '').replace('>', '');
+                userVal = userVal.replace('<', '').replace('>', '');
+                correctVal = tagOnly;
+            }
+
+            if (userVal === correctVal) {
+                input.style.borderColor = "#16a34a";
+                feedback.style.color = "#16a34a";
+                feedback.textContent = "CORRECT ! +1 Lab";
+                labsCompleted++;
+                saveLabProgress();
+
+                setTimeout(() => {
+                    generateLab();
+                }, 1000);
+            } else {
+                input.style.borderColor = "#dc2626";
+                feedback.style.color = "#dc2626";
+                feedback.textContent = "Incorrect. Réponse : " + currentLabAnswer;
+            }
+        }
+
+        // Add event listener for Enter key in Labs
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "Enter" && document.getElementById('labs').classList.contains('active')) {
+                window.checkLab();
+            }
+        });
+
+        // Hook into existing showTab logic can be tricky if not exposed cleanly, 
+        // but the original showTab is on window.
+        const originalShowTab = window.showTab;
+        window.showTab = function (id) {
+            originalShowTab(id);
+            if (id === 'labs') {
+                loadLabProgress();
+                generateLab();
+                const btn = document.querySelector('.tab-btn[style*="#fef3c7"]'); // Select by style as we didn't add ID or class (my bad, but it works)
+                if (btn) btn.classList.add('active');
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

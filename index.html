@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevStart - Le Hub du Développeur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #6366f1;
+            /* Indigo */
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 20%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-weight: 900;
+            font-size: 3.5rem;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px -10px var(--accent-glow);
+            border-color: var(--accent);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: #fff;
+        }
+
+        .card-desc {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 1s ease-out;
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* Tech Specific Colors */
+        .card-html:hover .progress-bar {
+            background: #e34c26;
+            box-shadow: 0 0 15px #e34c26;
+        }
+
+        .card-html:hover {
+            --accent: #e34c26;
+            --accent-glow: rgba(227, 76, 38, 0.4);
+        }
+
+        .card-css:hover .progress-bar {
+            background: #264de4;
+            box-shadow: 0 0 15px #264de4;
+        }
+
+        .card-css:hover {
+            --accent: #264de4;
+            --accent-glow: rgba(38, 77, 228, 0.4);
+        }
+
+        .card-js:hover .progress-bar {
+            background: #f7df1e;
+            box-shadow: 0 0 15px #f7df1e;
+            color: #000;
+        }
+
+        .card-js:hover {
+            --accent: #f7df1e;
+            --accent-glow: rgba(247, 223, 30, 0.4);
+        }
+
+        .card-php:hover .progress-bar {
+            background: #777bb4;
+            box-shadow: 0 0 15px #777bb4;
+        }
+
+        .card-php:hover {
+            --accent: #777bb4;
+            --accent-glow: rgba(119, 123, 180, 0.4);
+        }
+
+        .card-sql:hover .progress-bar {
+            background: #00758f;
+            box-shadow: 0 0 15px #00758f;
+        }
+
+        .card-sql:hover {
+            --accent: #00758f;
+            --accent-glow: rgba(0, 117, 143, 0.4);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>DevStart.</h1>
+            <p class="subtitle">Votre hub d'entraînement intensif pour devenir Expert Fullstack.</p>
+        </header>
+
+        <div class="grid">
+            <!-- HTML CARD -->
+            <a href="entrainement-html.html" class="card card-html">
+                <div class="badge">Architecture</div>
+                <div class="card-icon">⚡</div>
+                <h2 class="card-title">HTML Expert</h2>
+                <p class="card-desc">Maîtrisez la sémantique, l'accessibilité et la structure d'une page moderne.</p>
+
+                <div class="progress-info">
+                    <div class="progress-label">
+                        <span>Progression Labs</span>
+                        <span id="html-val">0 Labs</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="html-bar"></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- CSS CARD -->
+            <a href="entrainement-css.html" class="card card-css">
+                <div class="badge">Design</div>
+                <div class="card-icon">🎨</div>
+                <h2 class="card-title">CSS Master</h2>
+                <p class="card-desc">Flexbox, Grid, Animations et Design System. Créez des interfaces Wow.</p>
+
+                <div class="progress-info">
+                    <div class="progress-label">
+                        <span>Progression Labs</span>
+                        <span id="css-val">0 Labs</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="css-bar"></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- JS CARD -->
+            <a href="entrainement-js.html" class="card card-js">
+                <div class="badge">Logique</div>
+                <div class="card-icon">🚀</div>
+                <h2 class="card-title">JavaScript</h2>
+                <p class="card-desc">Le cœur du web. DOM, événements, API et asynchrone.</p>
+
+                <div class="progress-info">
+                    <div class="progress-label">
+                        <span>Progression Labs</span>
+                        <span id="js-val">0 Labs</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="js-bar"></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- PHP CARD -->
+            <a href="php-entrainement.html" class="card card-php">
+                <div class="badge">Backend</div>
+                <div class="card-icon">🐘</div>
+                <h2 class="card-title">PHP Modern</h2>
+                <p class="card-desc">Sécurité, Sessions, POO et PDO. Le backend solide et professionnel.</p>
+
+                <div class="progress-info">
+                    <div class="progress-label">
+                        <span>Progression Labs</span>
+                        <span id="php-val">0 Labs</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="php-bar"></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- ARCHITECTURE & SECURITY CARD (NEW) -->
+            <a href="architecture-securite.html" class="card card-arch" style="border-color:#0ea5e9;">
+                <div class="badge" style="background:#0369a1; color:white;">Expert</div>
+                <div class="card-icon">🛡️</div>
+                <h2 class="card-title" style="color:#38bdf8;">Archi & Sécu</h2>
+                <p class="card-desc">MVC, XSS, CSRF. Concevez des applications robustes et sécurisées.</p>
+
+                <div class="progress-info">
+                    <div class="progress-label">
+                        <span>Progression Labs</span>
+                        <span id="arch-val">0 Labs</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="arch-bar"
+                            style="background:#0ea5e9; box-shadow:0 0 10px #0ea5e9;"></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- SQL CARD -->
+            <a href="entrainement_mysql.html" class="card card-sql">
+                <div class="badge">Data</div>
+                <div class="card-icon">🗄️</div>
+                <h2 class="card-title">MySQL</h2>
+                <p class="card-desc">Requêtes complexes, jointures et modélisation de données.</p>
+
+                <div class="progress-info">
+                    <div class="progress-label">
+                        <span>Progression Labs</span>
+                        <span id="sql-val">0 Labs</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="sql-bar"></div>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Function to load progress
+            const loadProgress = (key, barId, valId) => {
+                const count = parseInt(localStorage.getItem(key) || 0);
+                const max = 1000; // Goal
+                const pct = Math.min(100, (count / max) * 100);
+
+                document.getElementById(barId).style.width = `${pct}%`;
+                document.getElementById(valId).textContent = `${count} / 1000`;
+            };
+
+            loadProgress('htmlLabsCompleted', 'html-bar', 'html-val');
+            loadProgress('cssLabsCompleted', 'css-bar', 'css-val');
+            loadProgress('jsLabsCompleted', 'js-bar', 'js-val');
+            loadProgress('phpLabsCompleted', 'php-bar', 'php-val');
+            loadProgress('archSecuLabsCompleted', 'arch-bar', 'arch-val');
+            loadProgress('sqlLabsCompleted', 'sql-bar', 'sql-val');
+        });
+    </script>
+</body>
+
+</html>

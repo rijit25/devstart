@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrainement Intensif CSS - NIVEAU EXPERT ULTIME</title>
+    <style>
+        :root {
+            /* Thème CSS : Violet/Indigo pour différencier du HTML */
+            --primary: #7c3aed;
+            --secondary: #5b21b6;
+            --accent: #d946ef;
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --code-bg: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--secondary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 18px;
+            border: none;
+            background: #e2e8f0;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #475569;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .tab-btn:hover {
+            background: #cbd5e1;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Content Sections */
+        .section {
+            display: none;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Flashcards Styling */
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: 20px;
+        }
+
+        .flashcard {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            background: #fff;
+            position: relative;
+            user-select: none;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.1);
+        }
+
+        .cat-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .fc-q {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .fc-a {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin-top: 15px;
+            padding-top: 20px;
+            border-top: 2px dashed #e2e8f0;
+            display: none;
+            width: 80%;
+        }
+
+        .fc-hint {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: auto;
+        }
+
+        /* Code & Drills Styling */
+        .drill-title {
+            margin-top: 0;
+            color: var(--secondary);
+            font-size: 1.5rem;
+        }
+
+        .drill-desc {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            position: relative;
+            border-left: 5px solid var(--accent);
+        }
+
+        /* CSS Specific Syntax Highlighting Simulation */
+        .selector {
+            color: #fca5a5;
+        }
+
+        /* Red-ish for tags */
+        .class {
+            color: #67e8f9;
+        }
+
+        /* Cyan for classes */
+        .id {
+            color: #fdba74;
+        }
+
+        /* Orange for IDs */
+        .property {
+            color: #d8b4fe;
+        }
+
+        /* Purple for props */
+        .comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .at-rule {
+            color: #facc15;
+        }
+
+        /* Yellow for @media */
+        .var {
+            color: #a5f3fc;
+        }
+
+        /* Light blue for vars */
+
+        .code-input {
+            background: #334155;
+            border: 1px solid #475569;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            min-width: 80px;
+            text-align: center;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .code-input:focus {
+            outline: 2px solid var(--accent);
+            border-color: transparent;
+        }
+
+        .code-input.correct {
+            background: #064e3b;
+            border-color: var(--success);
+            color: #4ade80;
+        }
+
+        .code-input.incorrect {
+            background: #450a0a;
+            border-color: var(--error);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--secondary);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e1;
+            color: #475569;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .result-msg {
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        /* --- 1000 LABS STYLES --- */
+        #labs {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #334155;
+        }
+
+        .lab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .lab-progress {
+            font-family: 'Consolas', monospace;
+            font-size: 2rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .lab-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .lab-question {
+            font-size: 1.6rem;
+            margin-bottom: 40px;
+            color: #fff;
+            font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .lab-input {
+            background: #334155;
+            border: 2px solid #475569;
+            padding: 15px 25px;
+            color: #fff;
+            font-family: 'Consolas', monospace;
+            font-size: 1.3rem;
+            border-radius: 8px;
+            margin-right: 15px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .lab-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #334155;
+            border-radius: 6px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .btn-lab {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .btn-lab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🎨 CSS Master Class</h1>
+            <p class="subtitle">Styles, Layouts, Grilles & Responsive</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('flashcards')">⚡ Flashcards</button>
+            <button class="tab-btn" onclick="showTab('selectors')">🎯 Sélecteurs</button>
+            <button class="tab-btn" onclick="showTab('flexbox')">📐 Flexbox</button>
+            <button class="tab-btn" onclick="showTab('boxmodel')">📦 Box Model</button>
+            <button class="tab-btn" onclick="showTab('grid')">▦ Grid (Grille)</button>
+            <button class="tab-btn" onclick="showTab('advanced')">📱 Responsive & Vars</button>
+            <button class="tab-btn" style="background:#fce7f3; color:#db2777;" onclick="showTab('labs')">🧪 DÉFI 1000
+                LABS</button>
+        </div>
+
+        <!-- 1. FLASHCARDS SECTION -->
+        <div id="flashcards" class="section active">
+            <div class="controls" style="margin-top:0; margin-bottom:15px;">
+                <h3 style="margin:0;">Révisez les Propriétés</h3>
+                <div>
+                    <button class="btn btn-outline" style="padding:5px 15px; font-size:0.9rem;"
+                        onclick="toggleRandom()">🔀 Aléatoire: <span id="rand-status">OFF</span></button>
+                    <span class="subtitle" style="margin-left:10px;" id="card-counter">1 / 60</span>
+                </div>
+            </div>
+
+            <div class="flashcard-container">
+                <div class="flashcard" onclick="flipCard()">
+                    <div class="cat-badge" id="fc-cat" style="background:var(--primary);">Général</div>
+                    <div class="fc-q" id="fc-q">Chargement...</div>
+                    <div class="fc-a" id="fc-a">...</div>
+                    <div class="fc-hint">Cliquez pour voir la propriété CSS</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-outline" onclick="prevCard()">← Précédent</button>
+                <button class="btn btn-outline" onclick="nextCard()">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- 2. SELECTORS DRILL -->
+        <div id="selectors" class="section">
+            <h3 class="drill-title">🎯 Le Sniper CSS (Les Sélecteurs)</h3>
+            <p class="drill-desc">La "science" du CSS commence ici. Comment cibler précisément les éléments HTML sans
+                toucher aux autres ?</p>
+
+            <div class="code-block">
+                <span class="comment">/* HTML: &lt;div id="header"&gt; &lt;a class="btn"&gt;...&lt;/a&gt; &lt;/div&gt;
+                    */</span>
+
+                <span class="comment">/* 1. Cibler l'élément avec l'ID "header" */</span>
+                <input type="text" class="code-input" data-ans="#header"> { ... }
+
+                <span class="comment">/* 2. Cibler TOUS les éléments avec la classe "btn" */</span>
+                <input type="text" class="code-input" data-ans=".btn"> { ... }
+
+                <span class="comment">/* 3. Cibler les liens (&lt;a&gt;) qui sont DANS une liste (&lt;ul&gt;) */</span>
+                <span class="selector">ul</span> <input type="text" class="code-input" data-ans="a"> { ... }
+
+                <span class="comment">/* 4. Cibler uniquement le survol de la souris sur un bouton */</span>
+                <span class="class">.btn</span><input type="text" class="code-input" data-ans=":hover"> { ... }
+
+                <span class="comment">/* 5. Cibler TOUS les éléments de la page (Universel) */</span>
+                <input type="text" class="code-input" data-ans="*"> { margin: 0; }
+
+                <span class="comment">/* 6. Cibler le paragraphe immédiatement après un titre h1 (Adjacent) */</span>
+                <span class="selector">h1</span> <input type="text" class="code-input" data-ans="+"> <span
+                    class="selector">p</span> { ... }
+            </div>
+            <button class="btn" onclick="checkCode('selectors')">Vérifier mes cibles</button>
+            <span id="selectors-result" class="result-msg"></span>
+        </div>
+
+        <!-- 3. FLEXBOX & LAYOUT -->
+        <div id="flexbox" class="section">
+            <h3 class="drill-title">📐 L'Architecture Moderne (Flexbox)</h3>
+            <p class="drill-desc">Pour centrer des éléments ou créer des colonnes, Flexbox est incontournable. Complétez
+                ce code pour centrer parfaitement un élément.</p>
+
+            <div class="code-block">
+                <span class="class">.container</span> {
+                <span class="comment">/* 1. Activer le mode Flexbox */</span>
+                <span class="property">display</span>: <input type="text" class="code-input" data-ans="flex">;
+
+                <span class="comment">/* 2. Centrer horizontalement (Axe principal) */</span>
+                <span class="property">justify-content</span>: <input type="text" class="code-input" data-ans="center">;
+
+                <span class="comment">/* 3. Centrer verticalement (Axe secondaire) */</span>
+                <span class="property">align-items</span>: <input type="text" class="code-input" data-ans="center">;
+
+                <span class="comment">/* 4. Mettre les enfants en colonne (au lieu de ligne) */</span>
+                <span class="property">flex-direction</span>: <input type="text" class="code-input" data-ans="column">;
+
+                <span class="comment">/* 5. Espacer les éléments (l'écart entre eux) */</span>
+                <span class="property">gap</span>: <input type="text" class="code-input" data-ans="20px">;
+                }
+            </div>
+            <button class="btn" onclick="checkCode('flexbox')">Vérifier l'alignement</button>
+            <span id="flexbox-result" class="result-msg"></span>
+        </div>
+
+        <!-- 4. BOX MODEL & DESIGN -->
+        <div id="boxmodel" class="section">
+            <h3 class="drill-title">📦 Design System & Box Model</h3>
+            <p class="drill-desc">Reproduisez le style d'une "Carte Produit" moderne (Arrondis, ombres, espacement).</p>
+
+            <div class="code-block">
+                <span class="class">.card</span> {
+                <span class="comment">/* 1. Espace INTÉRIEUR (entre le texte et le bord) */</span>
+                <span class="property"><input type="text" class="code-input" data-ans="padding"></span>: 20px;
+
+                <span class="comment">/* 2. Espace EXTÉRIEUR (entre la carte et les autres) */</span>
+                <span class="property"><input type="text" class="code-input" data-ans="margin"></span>: 15px;
+
+                <span class="comment">/* 3. Arrondir les coins de 10px */</span>
+                <span class="property">border-<input type="text" class="code-input" data-ans="radius"></span>: 10px;
+
+                <span class="comment">/* 4. Ombre portée (Esthétique) */</span>
+                <span class="property">box-<input type="text" class="code-input" data-ans="shadow"></span>: 0 4px 6px
+                rgba(0,0,0,0.1);
+
+                <span class="comment">/* 5. Changer le curseur en main au survol */</span>
+                <span class="property">cursor</span>: <input type="text" class="code-input" data-ans="pointer">;
+
+                <span class="comment">/* 6. Utiliser une couleur transparente (Alpha) */</span>
+                <span class="property">background-color</span>: rgba(255, 255, 255, <input type="text"
+                    class="code-input" data-ans="0.5">);
+                }
+            </div>
+            <button class="btn" onclick="checkCode('boxmodel')">Vérifier le Design</button>
+            <span id="boxmodel-result" class="result-msg"></span>
+        </div>
+
+        <!-- 5. GRID LAYOUT (NEW) -->
+        <div id="grid" class="section">
+            <h3 class="drill-title">▦ La Grille CSS (Grid Layout)</h3>
+            <p class="drill-desc">Grid est plus puissant que Flexbox pour les mises en page 2D (Lignes + Colonnes).
+                Créez une galerie de 3 colonnes.</p>
+
+            <div class="code-block">
+                <span class="class">.gallery</span> {
+                <span class="comment">/* 1. Activer le mode Grid */</span>
+                <span class="property">display</span>: <input type="text" class="code-input" data-ans="grid">;
+
+                <span class="comment">/* 2. Définir 3 colonnes égales (1 fraction chacune) */</span>
+                <span class="property">grid-template-columns</span>: 1fr <input type="text" class="code-input"
+                    data-ans="1fr"> 1fr;
+
+                <span class="comment">/* 3. Espace de 15px entre les cellules */</span>
+                <span class="property">gap</span>: <input type="text" class="code-input" data-ans="15px">;
+                }
+
+                <span class="class">.featured-item</span> {
+                <span class="comment">/* 4. Faire en sorte que cet élément prenne 2 colonnes de large */</span>
+                <span class="property">grid-column</span>: span <input type="text" class="code-input" data-ans="2">;
+                }
+            </div>
+            <button class="btn" onclick="checkCode('grid')">Vérifier la Grille</button>
+            <span id="grid-result" class="result-msg"></span>
+        </div>
+
+        <!-- 6. RESPONSIVE & VARS (NEW) -->
+        <div id="advanced" class="section">
+            <h3 class="drill-title">📱 Mobile First & Variables</h3>
+            <p class="drill-desc">Utilisez des variables pour le thème et une Media Query pour adapter le site aux
+                téléphones.</p>
+
+            <div class="code-block">
+                <span class="selector">:root</span> {
+                <span class="comment">/* 1. Déclarer une variable globale pour la couleur */</span>
+                <span class="var">--main-color</span>: #ff0000;
+                }
+
+                <span class="class">.button</span> {
+                <span class="comment">/* 2. Utiliser la variable définie plus haut */</span>
+                <span class="property">background</span>: <input type="text" class="code-input"
+                    data-ans="var">(--main-color);
+                }
+
+                <span class="comment">/* 3. Règle pour les écrans de taille MOBILE (max 600px) */</span>
+                <span class="at-rule">@media</span> (<input type="text" class="code-input" data-ans="max-width">: 600px)
+                {
+                <span class="class">.container</span> {
+                <span class="comment">/* 4. Passer les éléments en colonne sur mobile */</span>
+                <span class="property">flex-direction</span>: <input type="text" class="code-input" data-ans="column">;
+                }
+                }
+            </div>
+            <button class="btn" onclick="checkCode('advanced')">Vérifier le Code Pro</button>
+            <span id="advanced-result" class="result-msg"></span>
+        </div>
+
+        <!-- 7. 1000 LABS CHALLENGE -->
+        <div id="labs" class="section">
+            <div class="lab-header">
+                <div>
+                    <h3 style="margin:0; color:#fff;">🧪 GÉNÉRATEUR INFINI DE LABS CSS</h3>
+                    <small style="color:#d946ef;">Entraînement Style & Selecteurs</small>
+                </div>
+                <div style="text-align:right;">
+                    <div class="lab-progress" id="lab-count-display">0 / 1000</div>
+                    <div style="font-size:0.8rem; color:#f8f8f2;">LABS COMPLÉTÉS</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="lab-progress-bar"></div>
+            </div>
+
+            <div class="lab-container">
+                <div id="lab-question-area" class="lab-question">
+                    Chargement...
+                </div>
+
+                <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <input type="text" id="lab-input" class="lab-input" placeholder="Code CSS..." autocomplete="off">
+                    <button class="btn-lab" onclick="checkLab()">VALIDER</button>
+                </div>
+
+                <p id="lab-feedback" style="height:20px; font-weight:bold; margin-top:20px;"></p>
+                <button class="btn-outline" style="margin-top:20px; border-color:#6272a4; color:#d946ef;"
+                    onclick="generateLab()">Passer cette question</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATABASE CSS ---
+        const cssCards = [
+            // BASES & TEXTE
+            { cat: "Texte", q: "Changer la couleur du texte", a: "color" },
+            { cat: "Texte", q: "Changer la taille de la police", a: "font-size" },
+            { cat: "Texte", q: "Mettre le texte en GRAS", a: "font-weight: bold" },
+            { cat: "Texte", q: "Mettre le texte en ITALIQUE", a: "font-style: italic" },
+            { cat: "Texte", q: "Souligner le texte (lien)", a: "text-decoration: underline" },
+            { cat: "Texte", q: "Supprimer le soulignement d'un lien", a: "text-decoration: none" },
+            { cat: "Texte", q: "Aligner le texte au centre", a: "text-align: center" },
+            { cat: "Texte", q: "Mettre tout en MAJUSCULES", a: "text-transform: uppercase" },
+            { cat: "Texte", q: "Changer la police d'écriture (font)", a: "font-family" },
+
+            // BOITES (BOX MODEL)
+            { cat: "Boîte", q: "Couleur de fond", a: "background-color" },
+            { cat: "Boîte", q: "Largeur de l'élément", a: "width" },
+            { cat: "Boîte", q: "Hauteur de l'élément", a: "height" },
+            { cat: "Boîte", q: "Espace INTÉRIEUR (dans la boîte)", a: "padding" },
+            { cat: "Boîte", q: "Espace EXTÉRIEUR (autour de la boîte)", a: "margin" },
+            { cat: "Boîte", q: "Bordure (cadre)", a: "border" },
+            { cat: "Boîte", q: "Arrondir les angles", a: "border-radius" },
+            { cat: "Boîte", q: "Ombre portée", a: "box-shadow" },
+
+            // LAYOUT & DISPLAY
+            { cat: "Layout", q: "Elément qui prend toute la largeur (ex: div)", a: "display: block" },
+            { cat: "Layout", q: "Elément qui reste sur la ligne (ex: span)", a: "display: inline" },
+            { cat: "Layout", q: "Cacher un élément (ne prend plus de place)", a: "display: none" },
+            { cat: "Layout", q: "Activer Flexbox (1D)", a: "display: flex" },
+            { cat: "Layout", q: "Activer Grid (2D)", a: "display: grid" },
+            { cat: "Layout", q: "Empêcher le dépassement de contenu", a: "overflow: hidden" },
+
+            // GRID (NOUVEAU)
+            { cat: "Grid", q: "Définir les colonnes (ex: 3 égales)", a: "grid-template-columns: 1fr 1fr 1fr" },
+            { cat: "Grid", q: "Unité flexible propre à Grid", a: "fr (fraction)" },
+            { cat: "Grid", q: "Étendre un élément sur 2 colonnes", a: "grid-column: span 2" },
+            { cat: "Grid", q: "Espace entre les lignes et colonnes", a: "gap" },
+
+            // POSITIONNEMENT
+            { cat: "Position", q: "Position normale (par défaut)", a: "position: static" },
+            { cat: "Position", q: "Position libre par rapport au parent", a: "position: absolute" },
+            { cat: "Position", q: "Position par rapport à sa place normale", a: "position: relative" },
+            { cat: "Position", q: "Position fixe par rapport à l'écran (scroll)", a: "position: fixed" },
+            { cat: "Position", q: "Coller en haut au scroll (menu)", a: "position: sticky" },
+            { cat: "Position", q: "Gérer l'ordre de superposition (profondeur)", a: "z-index" },
+
+            // FLEXBOX (Détails)
+            { cat: "Flexbox", q: "Aligner horizontalement (Axe Principal)", a: "justify-content" },
+            { cat: "Flexbox", q: "Aligner verticalement (Axe Secondaire)", a: "align-items" },
+            { cat: "Flexbox", q: "Mettre en colonne verticale", a: "flex-direction: column" },
+            { cat: "Flexbox", q: "Autoriser le retour à la ligne", a: "flex-wrap: wrap" },
+
+            // AVANCÉ (RESPONSIVE & VARS)
+            { cat: "Avancé", q: "Règle pour cibler les Mobiles/Tablettes", a: "@media (max-width: ...)" },
+            { cat: "Avancé", q: "Syntaxe pour utiliser une variable", a: "var(--ma-variable)" },
+            { cat: "Avancé", q: "Unité relative à la taille de l'écran (Largeur)", a: "vw (Viewport Width)" },
+            { cat: "Avancé", q: "Unité relative à la taille de l'écran (Hauteur)", a: "vh (Viewport Height)" },
+            { cat: "Avancé", q: "Unité relative à la taille de police racine", a: "rem" },
+            { cat: "Avancé", q: "Changer le curseur de la souris", a: "cursor" },
+            { cat: "Avancé", q: "Transparence (0 à 1)", a: "opacity" },
+            { cat: "Avancé", q: "Animation douce (temps)", a: "transition" }
+        ];
+
+        // --- LOGIC ---
+        let cards = [...cssCards];
+        let currentIdx = 0;
+        let isRandom = false;
+
+        // Elements
+        let qEl, aEl, catEl, countEl, randBtn;
+
+        function updateCard() {
+            if (!qEl) return;
+
+            const c = cards[currentIdx];
+            qEl.innerText = c.q;
+            aEl.innerText = c.a;
+            catEl.innerText = c.cat;
+
+            // Dynamic Colors
+            const colors = {
+                "Texte": "#3b82f6",     // Blue
+                "Boîte": "#eab308",     // Yellow
+                "Layout": "#a855f7",    // Purple
+                "Position": "#ef4444",  // Red
+                "Flexbox": "#ec4899",   // Pink
+                "Grid": "#06b6d4",      // Cyan
+                "Avancé": "#10b981"     // Emerald
+            };
+            catEl.style.background = colors[c.cat] || "#64748b";
+
+            aEl.style.display = 'none';
+            countEl.innerText = `${currentIdx + 1} / ${cards.length}`;
+        }
+
+        window.flipCard = function () {
+            if (aEl.style.display === 'none') {
+                aEl.style.display = 'block';
+            } else {
+                aEl.style.display = 'none';
+            }
+        }
+
+        window.nextCard = function () {
+            currentIdx = (currentIdx + 1) % cards.length;
+            updateCard();
+        }
+
+        window.prevCard = function () {
+            currentIdx = (currentIdx - 1 + cards.length) % cards.length;
+            updateCard();
+        }
+
+        window.toggleRandom = function () {
+            isRandom = !isRandom;
+            const statusSpan = document.getElementById('rand-status');
+
+            if (isRandom) {
+                cards = [...cssCards].sort(() => Math.random() - 0.5);
+                statusSpan.innerText = "ON";
+                statusSpan.style.color = "#10b981";
+            } else {
+                cards = [...cssCards];
+                statusSpan.innerText = "OFF";
+                statusSpan.style.color = "inherit";
+            }
+            currentIdx = 0;
+            updateCard();
+        }
+
+        window.showTab = function (id) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(id).classList.add('active');
+
+            // Simple tab mapping
+            const tabs = ['flashcards', 'selectors', 'flexbox', 'boxmodel', 'grid', 'advanced'];
+            const idx = tabs.indexOf(id);
+            if (idx >= 0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+        }
+
+        window.checkCode = function (sectionId) {
+            const inputs = document.querySelectorAll(`#${sectionId} .code-input`);
+            let errors = 0;
+
+            inputs.forEach(inp => {
+                const userVal = inp.value.trim().toLowerCase().replace(/\s/g, ''); // remove spaces for lenient check
+                const correctVal = inp.getAttribute('data-ans').toLowerCase().replace(/\s/g, '');
+
+                // Check
+                if (userVal === correctVal) {
+                    inp.classList.add('correct');
+                    inp.classList.remove('incorrect');
+                } else {
+                    inp.classList.add('incorrect');
+                    inp.classList.remove('correct');
+                    errors++;
+                }
+            });
+
+            const resEl = document.getElementById(`${sectionId}-result`);
+            if (errors === 0) {
+                resEl.innerText = "✨ Parfait ! Code valide.";
+                resEl.style.color = "#16a34a";
+            } else {
+                resEl.innerText = `⚠️ ${errors} erreurs détectées.`;
+                resEl.style.color = "#dc2626";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            qEl = document.getElementById('fc-q');
+            aEl = document.getElementById('fc-a');
+            catEl = document.getElementById('fc-cat');
+            countEl = document.getElementById('card-counter');
+
+            updateCard();
+        });
+
+    </script>
+    <script>
+        // --- 1000 LABS LOGIC ---
+        let currentLabAnswer = "";
+        let labsCompleted = 0;
+
+        function loadLabProgress() {
+            const saved = localStorage.getItem('cssLabsCompleted');
+            if (saved) {
+                labsCompleted = parseInt(saved, 10);
+            }
+            updateLabUI();
+        }
+
+        function saveLabProgress() {
+            localStorage.setItem('cssLabsCompleted', labsCompleted);
+            updateLabUI();
+        }
+
+        function updateLabUI() {
+            const disp = document.getElementById('lab-count-display');
+            if (disp) disp.textContent = `${labsCompleted} / 1000`;
+
+            const bar = document.getElementById('lab-progress-bar');
+            if (bar) {
+                const percent = Math.min(100, (labsCompleted / 1000) * 100);
+                bar.style.width = `${percent}%`;
+            }
+        }
+
+        window.generateLab = function () {
+            const feedback = document.getElementById('lab-feedback');
+            const input = document.getElementById('lab-input');
+            if (!input) return;
+
+            feedback.textContent = "";
+            input.value = "";
+            input.classList.remove('correct', 'incorrect');
+            input.style.borderColor = "#475569";
+
+            // Logic to pick a question
+            const card = cssCards[Math.floor(Math.random() * cssCards.length)];
+
+            // Sometimes ask specifically for property name, sometimes for value if possible, 
+            // but flashcards are mostly Q->Property or Q->Value.
+            // We will use the Flashcard 'a' as the expected answer.
+
+            // Clean answer for display (remove generic text)
+            let displayQ = card.q;
+            let expected = card.a;
+
+            // Simple heuristic: if answer contains colon, it's a "prop: val" pair.
+            // We can ask just for property.
+
+            if (expected.includes(':')) {
+                const parts = expected.split(':');
+                const prop = parts[0].trim();
+                // 50% chance to ask just for property
+                if (Math.random() > 0.5) {
+                    displayQ = `Quelle propriété pour : <span style="color:#d946ef">${displayQ.toLowerCase()}</span> ?`;
+                    expected = prop;
+                } else {
+                    displayQ = `Comment écrire : <span style="color:#d946ef">${displayQ.toLowerCase()}</span> en CSS ?`;
+                    // expected remains full string e.g. "display: flex"
+                }
+            } else {
+                displayQ = `Quelle propriété/valeur pour : <span style="color:#d946ef">${displayQ.toLowerCase()}</span> ?`;
+            }
+
+            document.getElementById('lab-question-area').innerHTML = displayQ;
+            currentLabAnswer = expected;
+        }
+
+        window.checkLab = function () {
+            const input = document.getElementById('lab-input');
+            const feedback = document.getElementById('lab-feedback');
+
+            let userVal = input.value.trim().toLowerCase().replace(/\s/g, '');
+            let correctVal = currentLabAnswer.toLowerCase().replace(/\s/g, '');
+            // Remove semicolon if user typed it
+            userVal = userVal.replace(';', '');
+            correctVal = correctVal.replace(';', '');
+
+            if (userVal === correctVal) {
+                input.style.borderColor = "#16a34a";
+                feedback.style.color = "#16a34a";
+                feedback.textContent = "CORRECT ! +1 Lab";
+                labsCompleted++;
+                saveLabProgress();
+
+                setTimeout(() => {
+                    generateLab();
+                }, 1000);
+            } else {
+                input.style.borderColor = "#dc2626";
+                feedback.style.color = "#dc2626";
+                feedback.textContent = "Incorrect. Réponse : " + currentLabAnswer;
+            }
+        }
+
+        // Add event listener for Enter key in Labs
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "Enter" && document.getElementById('labs').classList.contains('active')) {
+                window.checkLab();
+            }
+        });
+
+        // Hook into existing showTab to load progress
+        const originalShowTab = window.showTab;
+        window.showTab = function (id) {
+            originalShowTab(id);
+            if (id === 'labs') {
+                loadLabProgress();
+                generateLab();
+                document.querySelector('.tab-btn[onclick="showTab(\'labs\')"]').classList.add('active');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

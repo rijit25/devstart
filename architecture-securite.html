@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture & Sécurité Web - DevStart</title>
+    <style>
+        :root {
+            /* Theme Security: Blue & Orange */
+            --primary: #0ea5e9;
+            /* Sky Blue */
+            --primary-dark: #0369a1;
+            --accent: #f97316;
+            /* Orange Warning */
+            --secondary: #1e1e2f;
+            --text-dark: #333;
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg: #f4f6f9;
+            --card: #ffffff;
+
+            /* Lab Theme */
+            --lab-bg: #0f172a;
+            --lab-accent: #38bdf8;
+            --lab-text: #f0f9ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "🛡️";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 60px;
+            opacity: 0.2;
+        }
+
+        h1 {
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            transition: all 0.2s;
+            border-bottom: 3px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-bottom-color: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        }
+
+        .tab-btn.lab-btn {
+            background: var(--lab-bg);
+            color: var(--accent);
+            border-bottom: 3px solid #334155;
+        }
+
+        .tab-btn.lab-btn.active {
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.5);
+            background: #1e293b;
+            border-color: var(--accent);
+        }
+
+        /* Content Area */
+        .section {
+            display: none;
+            background: var(--card);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Drill Styles */
+        .drill-title {
+            margin-top: 0;
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            border-left: 6px solid var(--primary);
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .drill-desc {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .concept-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .concept-title {
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1.1rem;
+        }
+
+        /* Labs Interface */
+        #labs {
+            background: var(--lab-bg);
+            color: var(--lab-text);
+            border: 1px solid #334155;
+        }
+
+        .lab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .lab-progress {
+            font-family: 'Consolas', monospace;
+            font-size: 2rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .level-badge {
+            background: #334155;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .level-badge.junior {
+            color: #69eb12;
+            border: 1px solid #69eb12;
+        }
+
+        .level-badge.mid {
+            color: #facc15;
+            border: 1px solid #facc15;
+        }
+
+        .level-badge.prod {
+            color: #f97316;
+            border: 1px solid #f97316;
+        }
+
+        .lab-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .lab-question {
+            font-size: 1.6rem;
+            margin-bottom: 40px;
+            color: #fff;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .lab-input {
+            background: #334155;
+            border: 2px solid #475569;
+            padding: 15px 25px;
+            color: #fff;
+            font-family: 'Consolas', monospace;
+            font-size: 1.3rem;
+            border-radius: 8px;
+            margin-right: 15px;
+            width: 400px;
+            text-align: center;
+        }
+
+        .lab-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #334155;
+            border-radius: 6px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .btn-lab {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .btn-lab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #475569;
+            color: #94a3b8;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🛡️ Architecture & Sécurité</h1>
+            <p class="subtitle">Conception Robuste, MVC, XSS, CSRF & Best Practices</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('arch')">🏗️ Architecture MVC</button>
+            <button class="tab-btn" onclick="showTab('secu')">🔒 Sécurité Web</button>
+            <button class="tab-btn lab-btn" onclick="showTab('labs')">🧪 DÉFI 1000 LABS</button>
+        </div>
+
+        <!-- 1. ARCHITECTURE SECTION -->
+        <div id="arch" class="section active">
+            <h3 class="drill-title">🏗️ Architecture & Clean Code</h3>
+            <p class="drill-desc">Ne codez plus comme un amateur. Structurez vos projets pour qu'ils soient
+                maintenables.</p>
+
+            <div class="concept-card">
+                <span class="concept-title">Le Pattern MVC (Model - View - Controller)</span>
+                <p>Séparez la logique (Controller), les données (Model) et l'affichage (View). Ne mélangez jamais de
+                    requêtes SQL dans vos fichiers HTML !</p>
+            </div>
+
+            <div class="concept-card">
+                <span class="concept-title">Structure de Dossiers Standard</span>
+                <ul style="margin:0; padding-left:20px;">
+                    <li><code>/public</code> : Seul dossier accessible au web (index.php, css, js)</li>
+                    <li><code>/src</code> : Classes et logique métier (Controllers, Models)</li>
+                    <li><code>/templates</code> : Vues (Fichiers .php ou .html.twig)</li>
+                    <li><code>/config</code> : Configuration (BDD, clés API)</li>
+                </ul>
+            </div>
+
+            <div class="concept-card">
+                <span class="concept-title">Routing</span>
+                <p>Au lieu de créer `contact.php`, `about.php`, utilisez un point d'entrée unique (`index.php`) qui
+                    redirige vers le bon contrôleur en fonction de l'URL.</p>
+            </div>
+        </div>
+
+        <!-- 2. SECURITY SECTION -->
+        <div id="secu" class="section">
+            <h3 class="drill-title" style="color:var(--error); border-color:var(--error);">🔒 Sécurité Web Critique</h3>
+            <p class="drill-desc">La sécurité n'est pas une option. Protégez vos utilisateurs.</p>
+
+            <div class="concept-card" style="border-left-color:var(--error);">
+                <span class="concept-title" style="color:var(--error);">XSS (Cross Site Scripting)</span>
+                <p>L'attaquant injecte du JavaScript malveillant. <br><strong>Solution :</strong> Échapper TOUTES les
+                    sorties avec <code>htmlspecialchars()</code>.</p>
+            </div>
+
+            <div class="concept-card" style="border-left-color:var(--error);">
+                <span class="concept-title" style="color:var(--error);">Injection SQL</span>
+                <p>L'attaquant manipule vos requêtes BDD. <br><strong>Solution :</strong> Utiliser TOUJOURS des requêtes
+                    préparées (PDO).</p>
+            </div>
+
+            <div class="concept-card" style="border-left-color:var(--error);">
+                <span class="concept-title" style="color:var(--error);">CSRF (Cross-Site Request Forgery)</span>
+                <p>L'attaquant force l'utilisateur à faire une action à son insu. <br><strong>Solution :</strong> Tokens
+                    CSRF dans les formulaires.</p>
+            </div>
+        </div>
+
+        <!-- 3. 1000 LABS CHALLENGE -->
+        <div id="labs" class="section">
+            <div class="lab-header">
+                <div>
+                    <h3 style="margin:0; color:#fff;">🛡️ LABS ARCHI & SÉCU</h3>
+                    <small style="color:var(--accent);">Mode Production Ready</small>
+                </div>
+                <div style="text-align:right;">
+                    <div class="lab-progress" id="lab-count-display">0 / 1000</div>
+                    <div style="font-size:0.8rem; color:#94a3b8;">LABS COMPLÉTÉS</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="lab-progress-bar"></div>
+            </div>
+
+            <div class="lab-container">
+                <div style="margin-bottom:20px;">
+                    <span id="lab-level-badge" class="level-badge junior">Niveau Junior</span>
+                </div>
+
+                <div id="lab-question-area" class="lab-question">
+                    Chargement du lab...
+                </div>
+
+                <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <input type="text" id="lab-input" class="lab-input" placeholder="Votre réponse..."
+                        autocomplete="off">
+                    <button class="btn-lab" onclick="checkLab()">VALIDER</button>
+                </div>
+
+                <p id="lab-feedback" style="height:20px; font-weight:bold; margin-top:20px;"></p>
+                <button class="btn-outline" onclick="generateLab()">Passer cette question</button>
+
+                <div id="lab-explanation"
+                    style="margin-top:30px; display:none; background:#334155; padding:20px; border-radius:8px; text-align:left; font-size:0.95rem;">
+                    <strong style="color:var(--accent);">🔍 Correction & Why :</strong>
+                    <p id="lab-explanation-text" style="color:#e2e8f0; margin-top:5px;"></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        console.log("ArchSecu Script Loaded");
+
+        // --- LAB DATA ---
+        const labData = {
+            foundations: [
+                { q: "Quel pattern sépare Modèle, Vue et Contrôleur ?", a: "mvc", expl: "MVC permet de séparer les responsabilités : logique, données et affichage." },
+                { q: "Quel dossier doit être le seul accessible publiquement ?", a: "public", expl: "Pour la sécurité, seul le dossier 'public' (contenant index.php) doit être exposé." },
+                { q: "Quelle faille consiste à injecter du JS dans une page ?", a: "xss", expl: "Cross Site Scripting (XSS) permet de voler des cookies ou rediriger l'utilisateur." },
+                { q: "Quelle faille manipule les requêtes BDD ?", a: "sql injection", expl: "L'injection SQL survient quand on concatène des variables directement dans la requête." },
+                { q: "Fonction PHP pour échapper les XSS à l'affichage ?", a: "htmlspecialchars", expl: "Cette fonction transforme < et > en entités HTML inoffensives." },
+                { q: "Fonction PHP pour hacher un mot de passe ?", a: "password_hash", expl: "Ne stockez jamais de mots de passe en clair. Utilisez bcrypt/argon2 via password_hash." }
+            ],
+            app: [
+                { q: "Quel fichier sert de point d'entrée unique (Routing) ?", a: "index.php", expl: "Le Front Controller (index.php) intercepte toutes les requêtes pour les router." },
+                { q: "Comment appelle-t-on le code 'sale' et emmêlé ?", a: "spaghetti", expl: "Le code spaghetti mélange HTML, SQL et PHP dans le même fichier, rendant la maintenance impossible." },
+                { q: "Où stocker les identifiants BDD  ?", a: ".env", expl: "Les variables d'environnement (.env) hors du code source sont la bonne pratique." },
+                { q: "Quel outil gère les dépendances en PHP ?", a: "composer", expl: "Composer est le standard pour installer des librairies et gérer l'autoloading." }
+            ],
+            vuln: [
+                { q: "Quelle méthode PDO empêche les injections SQL ?", a: "prepare", expl: "Les requêtes préparées séparent la requête SQL des données." },
+                { q: "Que faut-il ajouter aux formulaires pour éviter le CSRF ?", a: "token", expl: "Un jeton (token) unique vérifie que la requête vient bien de votre formulaire." },
+                { q: "Attribut cookie pour empêcher l'accès JS (Anti-XSS) ?", a: "httponly", expl: "Le drapeau HttpOnly rend le cookie invisible au JavaScript." },
+                { q: "Attribut cookie pour forcer l'envoi en HTTPS ?", a: "secure", expl: "Le drapeau Secure garantit que le cookie ne transite que sur une connexion chiffrée." }
+            ]
+        };
+
+        // --- STATE ---
+        let currentLab = null;
+        let labsCompleted = 0;
+
+        function loadLabProgress() {
+            const saved = localStorage.getItem('archSecuLabsCompleted');
+            if (saved) labsCompleted = parseInt(saved, 10);
+            updateLabUI();
+        }
+
+        function saveLabProgress() {
+            localStorage.setItem('archSecuLabsCompleted', labsCompleted);
+            updateLabUI();
+        }
+
+        function updateLabUI() {
+            document.getElementById('lab-count-display').textContent = `${labsCompleted} / 1000`;
+            const percent = Math.min(100, (labsCompleted / 1000) * 100);
+            document.getElementById('lab-progress-bar').style.width = `${percent}%`;
+
+            // Badge logic
+            const badge = document.getElementById('lab-level-badge');
+            if (labsCompleted < 300) {
+                badge.className = 'level-badge junior';
+                badge.innerText = "Niveau Junior (Fondations)";
+            } else if (labsCompleted < 600) {
+                badge.className = 'level-badge mid';
+                badge.innerText = "Niveau Intermédiaire (App)";
+            } else {
+                badge.className = 'level-badge prod';
+                badge.innerText = "Niveau Production (Expert)";
+            }
+        }
+
+        window.generateLab = function () {
+            // Reset UI
+            document.getElementById('lab-feedback').textContent = "";
+            document.getElementById('lab-input').value = "";
+            document.getElementById('lab-input').style.borderColor = "#475569";
+            document.getElementById('lab-explanation').style.display = 'none';
+
+            // Select category based on progress
+            let pool = [];
+            if (labsCompleted < 300) pool = labData.foundations;
+            else if (labsCompleted < 600) pool = [...labData.foundations, ...labData.app];
+            else pool = [...labData.foundations, ...labData.app, ...labData.vuln];
+
+            const item = pool[Math.floor(Math.random() * pool.length)];
+            currentLab = item;
+
+            document.getElementById('lab-question-area').textContent = item.q;
+        }
+
+        window.checkLab = function () {
+            const input = document.getElementById('lab-input');
+            const feedback = document.getElementById('lab-feedback');
+            const explBox = document.getElementById('lab-explanation');
+
+            if (!input || !currentLab) return;
+
+            let userVal = input.value.trim().toLowerCase();
+            userVal = userVal.replace("()", ""); // Tollérant
+
+            if (userVal === currentLab.a.toLowerCase()) {
+                input.style.borderColor = "#16a34a";
+                feedback.style.color = "#16a34a";
+                feedback.textContent = "CORRECT ! +1 Lab - Production Ready 🛡️";
+
+                if (explBox) {
+                    explBox.style.display = 'block';
+                    document.getElementById('lab-explanation-text').textContent = currentLab.expl;
+                }
+
+                labsCompleted++;
+                saveLabProgress();
+
+                // Auto next after 3s to read explanation
+                setTimeout(() => {
+                    generateLab();
+                }, 4000);
+            } else {
+                input.style.borderColor = "#dc2626";
+                feedback.style.color = "#dc2626";
+                feedback.textContent = "Incorrect. Réessayez.";
+            }
+        }
+
+        // Tab Logic
+        window.showTab = function (id) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(id).classList.add('active');
+
+            const tabs = ['arch', 'secu', 'labs'];
+            const idx = tabs.indexOf(id);
+            if (idx >= 0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+
+            if (id === 'labs') {
+                loadLabProgress();
+                generateLab();
+            }
+        }
+
+        // Enter key
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "Enter" && document.getElementById('labs').classList.contains('active')) {
+                window.checkLab();
+            }
+        });
+
+    </script>
+</body>
+
+</html>

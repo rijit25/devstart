@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrainement Intensif JavaScript - GRAND MAÎTRE</title>
+    <style>
+        :root {
+            /* Thème JS : Jaune JS et Noir */
+            --primary: #f7df1e; 
+            --primary-dark: #c0ad00;
+            --secondary: #323330; /* Fond foncé JS */
+            --text-dark: #1f2937;
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --code-bg: #1e1e1e; /* VS Code style */
+            --boss-bg: #2d0a31; /* Couleur spéciale Boss */
+            --lab-bg: #0f172a; /* Thème Labs sombre */
+            --lab-accent: #38bdf8; /* Bleu cyan futuriste */
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        header::after {
+            content: "JS";
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            font-size: 150px;
+            font-weight: bold;
+            color: rgba(247, 223, 30, 0.1);
+            transform: rotate(-15deg);
+        }
+        h1 { margin: 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; text-shadow: 1px 1px 0 #000; position: relative; z-index: 2; }
+        .subtitle { color: #e5e7eb; font-style: italic; margin-top: 5px; opacity: 0.9; position: relative; z-index: 2; }
+        
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 18px;
+            border: none;
+            background: #e5e7eb;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 700;
+            color: #4b5563;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            border-bottom: 4px solid #d1d5db;
+        }
+        .tab-btn:hover { background: #d1d5db; transform: translateY(1px); }
+        .tab-btn.active {
+            background: var(--primary);
+            color: var(--secondary);
+            border-bottom: 4px solid var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(247, 223, 30, 0.4);
+        }
+        .tab-btn.boss-btn {
+            background: #581c87;
+            color: white;
+            border-bottom: 4px solid #3b0764;
+        }
+        .tab-btn.boss-btn.active {
+            background: #6b21a8;
+            box-shadow: 0 4px 10px rgba(107, 33, 168, 0.5);
+        }
+        .tab-btn.lab-btn {
+            background: var(--lab-bg);
+            color: var(--lab-accent);
+            border-bottom: 4px solid #020617;
+        }
+        .tab-btn.lab-btn.active {
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+            background: #1e293b;
+        }
+
+        /* Content Sections */
+        .section {
+            display: none;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            animation: fadeIn 0.4s ease;
+        }
+        .section.active { display: block; }
+
+        /* Flashcards Styling */
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: 20px;
+        }
+        .flashcard {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            background: #fff;
+            position: relative;
+            user-select: none;
+        }
+        .flashcard:hover { 
+            transform: translateY(-5px); 
+            border-color: var(--primary); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .cat-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--secondary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: var(--primary);
+        }
+
+        .fc-q { font-size: 1.4rem; font-weight: 700; color: var(--secondary); margin-bottom: 15px; line-height: 1.4; }
+        .fc-a { 
+            font-size: 1.6rem; 
+            color: #d97706; /* Un orange foncé pour contraster */
+            font-family: 'Consolas', 'Monaco', monospace; 
+            margin-top: 15px;
+            padding-top: 20px;
+            border-top: 2px dashed #e5e7eb;
+            display: none; 
+            width: 80%;
+        }
+        .fc-hint { font-size: 0.9rem; color: #9ca3af; margin-top: auto; }
+
+        /* Code & Drills Styling */
+        .drill-title { margin-top: 0; color: var(--secondary); font-size: 1.5rem; border-left: 5px solid var(--primary); padding-left: 15px; }
+        .drill-desc { color: #4b5563; margin-bottom: 20px; }
+        
+        .code-block {
+            background: var(--code-bg);
+            color: #d4d4d4;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            position: relative;
+            font-size: 1rem;
+        }
+        
+        /* JS Syntax Highlighting Simulation */
+        .kwd { color: #569cd6; font-weight: bold; } /* Keyword (const, let, function) */
+        .str { color: #ce9178; } /* String */
+        .fn { color: #dcdcaa; } /* Function */
+        .cmt { color: #6a9955; font-style: italic; } /* Comment */
+        .num { color: #b5cea8; } /* Number */
+        .obj { color: #4ec9b0; } /* Object/Class */
+        .this { color: #569cd6; font-style: italic; } /* this */
+
+        .code-input {
+            background: #3c3c3c;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .code-input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+        .code-input.correct { background: #064e3b; border-color: var(--success); color: #4ade80; }
+        .code-input.incorrect { background: #450a0a; border-color: var(--error); }
+
+        /* Controls */
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .btn {
+            background: var(--secondary);
+            color: var(--primary);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #1f2937; transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #d1d5db;
+            color: #4b5563;
+        }
+        .btn-outline:hover { border-color: var(--secondary); color: var(--secondary); }
+
+        .result-msg { font-weight: bold; margin-left: 15px; }
+
+        /* LABS 1000 STYLES */
+        #labs { background: #0f172a; color: #e2e8f0; border: 1px solid #334155; }
+        .lab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
+        .lab-progress { font-family: 'Courier New', monospace; font-size: 1.5rem; color: var(--lab-accent); font-weight: bold; }
+        .lab-container { text-align: center; padding: 40px; }
+        .lab-question { font-size: 1.4rem; margin-bottom: 30px; color: #fff; font-weight: 600; }
+        .lab-input { background: #334155; border: 2px solid #475569; padding: 10px 20px; color: white; font-family: monospace; font-size: 1.2rem; border-radius: 6px; margin-right: 10px; width: 200px; text-align: center; }
+        .lab-input:focus { outline: none; border-color: var(--lab-accent); }
+        .progress-bar-container { width: 100%; height: 10px; background: #334155; border-radius: 5px; margin-top: 5px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--lab-accent); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--lab-accent); }
+        .btn-lab { background: var(--lab-accent); color: #0f172a; border:none; padding: 10px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .btn-lab:hover { background: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🚀 JavaScript Grand Maître</h1>
+        <p class="subtitle">Bases, POO, Async, ES6+ & Défi 1000 Labs</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('flashcards')">⚡ Flashcards</button>
+        <button class="tab-btn" onclick="showTab('bases')">🏗️ Bases</button>
+        <button class="tab-btn" onclick="showTab('dom')">🖱️ DOM</button>
+        <button class="tab-btn" onclick="showTab('arrays')">🧩 Arrays</button>
+        <button class="tab-btn" onclick="showTab('classes')">🏛️ Classes (POO)</button>
+        <button class="tab-btn" onclick="showTab('async')">🌐 Async</button>
+        <button class="tab-btn boss-btn" onclick="showTab('boss')">👹 BOSS FINAL</button>
+        <button class="tab-btn lab-btn" onclick="showTab('labs')">🧪 DÉFI 1000 LABS</button>
+    </div>
+
+    <!-- 1. FLASHCARDS SECTION -->
+    <div id="flashcards" class="section active">
+        <div class="controls" style="margin-top:0; margin-bottom:15px;">
+            <h3 style="margin:0;">Concepts & Vocabulaire</h3>
+            <div>
+                <button class="btn btn-outline" style="padding:5px 15px; font-size:0.9rem;" onclick="toggleRandom()">🔀 Aléatoire: <span id="rand-status">OFF</span></button>
+                <span class="subtitle" style="margin-left:10px; color:#666;" id="card-counter">1 / 90</span>
+            </div>
+        </div>
+
+        <div class="flashcard-container">
+            <div class="flashcard" onclick="flipCard()">
+                <div class="cat-badge" id="fc-cat">Général</div>
+                <div class="fc-q" id="fc-q">Chargement...</div>
+                <div class="fc-a" id="fc-a">...</div>
+                <div class="fc-hint">Cliquez pour révéler la réponse</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-outline" onclick="prevCard()">← Précédent</button>
+            <button class="btn btn-outline" onclick="nextCard()">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- 2. BASES DRILL -->
+    <div id="bases" class="section">
+        <h3 class="drill-title">🏗️ Les Fondations (Variables & Logique)</h3>
+        <p class="drill-desc">Ne confondez plus `let`, `const` et maîtrisez les boucles.</p>
+
+        <div class="code-block">
+<span class="cmt">// 1. Déclarer une constante (ne peut pas changer)</span>
+<input type="text" class="code-input" data-ans="const"> PI = 3.14;
+
+<span class="cmt">// 2. Déclarer une variable modifiable</span>
+<input type="text" class="code-input" data-ans="let"> score = 0;
+
+<span class="cmt">// 3. Condition : Si score est strictement égal à 10</span>
+if (score <input type="text" class="code-input" data-ans="==="> 10) { ... }
+
+<span class="cmt">// 4. Condition : ET Logique (Les deux conditions vraies)</span>
+if (age > 18 <input type="text" class="code-input" data-ans="&&"> hasLicense) { ... }
+
+<span class="cmt">// 5. Boucle For classique : de 0 à 9</span>
+for (let i = 0; i <input type="text" class="code-input" data-ans="<"> 10; i<input type="text" class="code-input" data-ans="++">) { ... }
+
+<span class="cmt">// 6. Convertir une chaîne "42" en nombre entier</span>
+let num = <input type="text" class="code-input" data-ans="parseInt">("42");
+        </div>
+        <button class="btn" onclick="checkCode('bases')">Vérifier Bases</button>
+        <span id="bases-result" class="result-msg"></span>
+    </div>
+
+    <!-- 3. DOM DRILL -->
+    <div id="dom" class="section">
+        <h3 class="drill-title">🖱️ Maître du DOM (Interactions)</h3>
+        <p class="drill-desc">Manipuler la page HTML sans recharger. C'est le cœur du Front-End.</p>
+
+        <div class="code-block">
+<span class="cmt">// HTML: &lt;button id="btn" class="active"&gt;Click Me&lt;/button&gt;</span>
+
+<span class="cmt">// 1. Sélectionner l'élément par son ID (Méthode moderne)</span>
+const btn = document.<input type="text" class="code-input" data-ans="querySelector">("#btn");
+
+<span class="cmt">// 2. Ajouter un écouteur d'événement au click</span>
+btn.<input type="text" class="code-input" data-ans="addEventListener">("click", () => {
+    
+    <span class="cmt">// 3. Modifier le texte du bouton</span>
+    btn.<input type="text" class="code-input" data-ans="textContent"> = "Clicked!";
+    
+    <span class="cmt">// 4. Ajouter/Enlever une classe CSS (toggle)</span>
+    btn.<input type="text" class="code-input" data-ans="classList">.toggle("active");
+    
+    <span class="cmt">// 5. Changer le style directement (couleur rouge)</span>
+    btn.<input type="text" class="code-input" data-ans="style">.color = "red";
+});
+        </div>
+        <button class="btn" onclick="checkCode('dom')">Vérifier DOM</button>
+        <span id="dom-result" class="result-msg"></span>
+    </div>
+
+    <!-- 4. ARRAYS DRILL -->
+    <div id="arrays" class="section">
+        <h3 class="drill-title">🧩 Tableaux Modernes (Map, Filter, Reduce)</h3>
+        <p class="drill-desc">La manipulation de données est la compétence N°1 du développeur React/Vue.</p>
+
+        <div class="code-block">
+const users = [
+    { name: "Alice", age: 25 }, 
+    { name: "Bob", age: 17 }, 
+    { name: "Charlie", age: 30 }
+];
+
+<span class="cmt">// 1. FILTER : Garder uniquement les majeurs (age >= 18)</span>
+const majeurs = users.<input type="text" class="code-input" data-ans="filter">(u => u.age >= 18);
+
+<span class="cmt">// 2. MAP : Créer un tableau juste avec les noms ["Alice", "Bob"...]</span>
+const names = users.<input type="text" class="code-input" data-ans="map">(u => u.name);
+
+<span class="cmt">// 3. FIND : Trouver le PREMIER utilisateur qui s'appelle "Bob"</span>
+const bob = users.<input type="text" class="code-input" data-ans="find">(u => u.name === "Bob");
+
+<span class="cmt">// 4. REDUCE : Calculer la somme totale des âges</span>
+const totalAge = users.<input type="text" class="code-input" data-ans="reduce">((total, u) => total + u.age, 0);
+        </div>
+        <button class="btn" onclick="checkCode('arrays')">Vérifier Arrays</button>
+        <span id="arrays-result" class="result-msg"></span>
+    </div>
+
+    <!-- 5. CLASSES & POO (NEW) -->
+    <div id="classes" class="section">
+        <h3 class="drill-title">🏛️ Classes & POO (Structure Avancée)</h3>
+        <p class="drill-desc">Organisez votre code avec des objets et de l'héritage. Indispensable pour les gros projets.</p>
+
+        <div class="code-block">
+<span class="cmt">// 1. Créer une classe 'Voiture'</span>
+<input type="text" class="code-input" data-ans="class"> Voiture {
+    
+    <span class="cmt">// 2. Le constructeur initialise les données</span>
+    <input type="text" class="code-input" data-ans="constructor">(marque) {
+        <span class="cmt">// 3. 'this' fait référence à l'instance créée</span>
+        <span class="this">this</span>.marque = marque;
+    }
+
+    demarrer() {
+        return "Vroom";
+    }
+}
+
+<span class="cmt">// 4. Créer une classe 'Ferrari' qui hérite de 'Voiture'</span>
+class Ferrari <input type="text" class="code-input" data-ans="extends"> Voiture {
+    constructor() {
+        <span class="cmt">// 5. Appeler le constructeur du parent</span>
+        <input type="text" class="code-input" data-ans="super">("Ferrari"); 
+    }
+}
+
+<span class="cmt">// 6. Instancier (créer) une nouvelle Ferrari</span>
+const maVoiture = <input type="text" class="code-input" data-ans="new"> Ferrari();
+        </div>
+        <button class="btn" onclick="checkCode('classes')">Vérifier Classes</button>
+        <span id="classes-result" class="result-msg"></span>
+    </div>
+
+    <!-- 6. ASYNC DRILL -->
+    <div id="async" class="section">
+        <h3 class="drill-title">🌐 Asynchrone & API (Le Web Moderne)</h3>
+        <p class="drill-desc">Récupérer des données depuis un serveur sans bloquer la page.</p>
+
+        <div class="code-block">
+<span class="cmt">// 1. Fonction asynchrone moderne</span>
+<input type="text" class="code-input" data-ans="async"> function getUser() {
+    <span class="cmt">// Gestion des erreurs</span>
+    <input type="text" class="code-input" data-ans="try"> {
+        
+        <span class="cmt">// 2. Attendre la réponse du serveur (Pause l'exécution)</span>
+        const response = <input type="text" class="code-input" data-ans="await"> fetch("https://api.com/user");
+        
+        <span class="cmt">// 3. Convertir la réponse brute en JSON</span>
+        const data = await response.<input type="text" class="code-input" data-ans="json">();
+        
+        console.log(data);
+        
+    } <input type="text" class="code-input" data-ans="catch"> (error) {
+        console.error("Erreur réseau", error);
+    }
+}
+        </div>
+        <button class="btn" onclick="checkCode('async')">Vérifier Async</button>
+        <span id="async-result" class="result-msg"></span>
+    </div>
+
+    <!-- 7. BOSS FINAL (NEW) -->
+    <div id="boss" class="section" style="border: 2px solid #581c87;">
+        <h3 class="drill-title" style="color:#581c87; border-left-color:#581c87;">👹 LE BOSS FINAL : Todo List Logic</h3>
+        <p class="drill-desc">Combinez DOM, Events et Arrays. Imaginez que vous codez la fonction pour ajouter une tâche.</p>
+
+        <div class="code-block" style="background: #11051b;">
+const input = document.querySelector("#taskInput");
+const btn = document.querySelector("#addBtn");
+const list = document.querySelector("#taskList");
+
+<span class="cmt">// Au clic sur le bouton...</span>
+btn.addEventListener("<input type="text" class="code-input" data-ans="click">", () => {
+    
+    <span class="cmt">// 1. Récupérer le texte tapé dans l'input (Propriété value)</span>
+    const text = input.<input type="text" class="code-input" data-ans="value">;
+
+    if(text !== "") {
+        <span class="cmt">// 2. Créer un nouvel élément HTML &lt;li&gt;</span>
+        const li = document.<input type="text" class="code-input" data-ans="createElement">("li");
+        
+        <span class="cmt">// 3. Mettre le texte dedans</span>
+        li.textContent = text;
+
+        <span class="cmt">// 4. Ajouter cet élément à la liste parente (&lt;ul&gt;)</span>
+        list.<input type="text" class="code-input" data-ans="appendChild">((li));
+
+        <span class="cmt">// 5. Vider le champ input</span>
+        input.value = "";
+    }
+});
+        </div>
+        <button class="btn" style="background:#581c87; color:white;" onclick="checkCode('boss')">Vaincre le Boss</button>
+        <span id="boss-result" class="result-msg"></span>
+    </div>
+
+    <!-- 8. 1000 LABS CHALLENGE (NEW) -->
+    <div id="labs" class="section">
+        <div class="lab-header">
+            <div>
+                <h3 style="margin:0; color:#fff;">🧪 GÉNÉRATEUR INFINI DE LABS</h3>
+                <small style="color:#94a3b8;">Entraînement procédural aléatoire</small>
+            </div>
+            <div style="text-align:right;">
+                <div class="lab-progress" id="lab-count-display">0 / 1000</div>
+                <div style="font-size:0.8rem; color:#94a3b8;">LABS COMPLÉTÉS</div>
+            </div>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="lab-progress-bar"></div>
+        </div>
+
+        <div class="lab-container">
+            <div id="lab-question-area" class="lab-question">
+                Chargement du lab...
+            </div>
+            
+            <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px;">
+                <input type="text" id="lab-input" class="lab-input" placeholder="Votre code ici..." autocomplete="off">
+                <button class="btn-lab" onclick="checkLab()">VALIDER</button>
+            </div>
+            
+            <p id="lab-feedback" style="height:20px; font-weight:bold; margin-top:20px;"></p>
+            <button class="btn-outline" style="margin-top:20px; border-color:#334155; color:#94a3b8;" onclick="generateLab()">Passer cette question</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- DATABASE JS COMPLETE ---
+    const jsCards = [
+        // BASES
+        { cat: "Bases", q: "Mot-clé pour déclarer une variable qui NE changera PAS", a: "const" },
+        { cat: "Bases", q: "Mot-clé pour une variable locale modifiable", a: "let" },
+        { cat: "Bases", q: "Opérateur d'égalité stricte (valeur ET type)", a: "===" },
+        { cat: "Bases", q: "Opérateur OU logique", a: "||" },
+        { cat: "Bases", q: "Opérateur ET logique", a: "&&" },
+        { cat: "Bases", q: "Type de donnée pour Vrai/Faux", a: "Boolean" },
+        
+        // DOM
+        { cat: "DOM", q: "Objet global représentant la page HTML", a: "document" },
+        { cat: "DOM", q: "Méthode moderne pour sélectionner un élément CSS", a: "querySelector()" },
+        { cat: "DOM", q: "Écouter un événement (click, scroll...)", a: "addEventListener()" },
+        { cat: "DOM", q: "Propriété pour lire/écrire la valeur d'un input", a: ".value" },
+        { cat: "DOM", q: "Créer un nouvel élément HTML via JS", a: "document.createElement()" },
+        { cat: "DOM", q: "Ajouter un enfant à un élément parent", a: "appendChild()" },
+
+        // ARRAYS
+        { cat: "Arrays", q: "Ajouter un élément à la FIN du tableau", a: "push()" },
+        { cat: "Arrays", q: "Retirer le DERNIER élément", a: "pop()" },
+        { cat: "Arrays", q: "Boucler et transformer chaque élément", a: "map()" },
+        { cat: "Arrays", q: "Garder seulement les éléments qui valident une condition", a: "filter()" },
+        { cat: "Arrays", q: "Trouver l'index d'un élément", a: "indexOf()" },
+
+        // POO & CLASSES (NEW)
+        { cat: "POO", q: "Mot-clé pour définir un modèle d'objet", a: "class" },
+        { cat: "POO", q: "Méthode appelée automatiquement à la création", a: "constructor()" },
+        { cat: "POO", q: "Mot-clé pour faire référence à l'objet actuel", a: "this" },
+        { cat: "POO", q: "Mot-clé pour hériter d'une autre classe", a: "extends" },
+        { cat: "POO", q: "Appeler le constructeur du parent", a: "super()" },
+
+        // UNDER THE HOOD (NEW)
+        { cat: "Expert", q: "Qu'est-ce qu'une Closure ?", a: "Fonction qui se souvient de son scope parent" },
+        { cat: "Expert", q: "Le fait que les variables remontent en haut du fichier", a: "Hoisting" },
+        { cat: "Expert", q: "Stocker une donnée persistante dans le navigateur", a: "localStorage" },
+        
+        // ASYNC
+        { cat: "Async", q: "Objet représentant une opération future", a: "Promise" },
+        { cat: "Async", q: "Fonction native pour faire des requêtes HTTP", a: "fetch()" },
+        { cat: "Async", q: "Mot-clé pour attendre la fin d'une Promise", a: "await" },
+        { cat: "Async", q: "Transformer du texte JSON en objet JS", a: "JSON.parse()" }
+    ];
+
+    // --- LOGIC ---
+    let cards = [...jsCards];
+    let currentIdx = 0;
+    let isRandom = false;
+
+    // Elements
+    let qEl, aEl, catEl, countEl;
+
+    function updateCard() {
+        if(!qEl) return;
+        
+        const c = cards[currentIdx];
+        qEl.innerText = c.q;
+        aEl.innerText = c.a;
+        catEl.innerText = c.cat;
+        
+        // Dynamic Colors
+        const colors = {
+            "Bases": "#569cd6",    // Blue
+            "DOM": "#eab308",      // Yellow
+            "Arrays": "#c084fc",   // Purple
+            "POO": "#f43f5e",      // Rose
+            "Async": "#06b6d4",    // Cyan
+            "Expert": "#10b981"    // Emerald
+        };
+        catEl.style.backgroundColor = colors[c.cat] || "#323330";
+        catEl.style.color = "#fff";
+        
+        aEl.style.display = 'none';
+        countEl.innerText = `${currentIdx + 1} / ${cards.length}`;
+    }
+
+    window.flipCard = function() {
+        aEl.style.display = (aEl.style.display === 'none') ? 'block' : 'none';
+    }
+
+    window.nextCard = function() {
+        currentIdx = (currentIdx + 1) % cards.length;
+        updateCard();
+    }
+
+    window.prevCard = function() {
+        currentIdx = (currentIdx - 1 + cards.length) % cards.length;
+        updateCard();
+    }
+
+    window.toggleRandom = function() {
+        isRandom = !isRandom;
+        const statusSpan = document.getElementById('rand-status');
+        
+        if(isRandom) {
+            cards = [...jsCards].sort(() => Math.random() - 0.5);
+            statusSpan.innerText = "ON";
+            statusSpan.style.color = "#16a34a";
+        } else {
+            cards = [...jsCards];
+            statusSpan.innerText = "OFF";
+            statusSpan.style.color = "inherit";
+        }
+        currentIdx = 0;
+        updateCard();
+    }
+
+    window.showTab = function(id) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(id).classList.add('active');
+        
+        const tabs = ['flashcards', 'bases', 'dom', 'arrays', 'classes', 'async', 'boss', 'labs'];
+        const idx = tabs.indexOf(id);
+        if(idx >= 0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+
+        if(id === 'labs') {
+            loadLabProgress();
+            generateLab();
+        }
+    }
+
+    window.checkCode = function(sectionId) {
+        const inputs = document.querySelectorAll(`#${sectionId} .code-input`);
+        let errors = 0;
+        
+        inputs.forEach(inp => {
+            const userVal = inp.value.trim().toLowerCase().replace(/\s/g, ''); 
+            const correctVal = inp.getAttribute('data-ans').toLowerCase().replace(/\s/g, '');
+            
+            // Special check for tricky chars
+            if(correctVal === '$' && userVal === '$') {
+                 inp.classList.add('correct');
+                 inp.classList.remove('incorrect');
+                 return;
+            }
+            if(correctVal === 'appendchild' && (userVal === 'append' || userVal === 'appendchild')) {
+                 inp.classList.add('correct'); // Tolérance pour append
+                 inp.classList.remove('incorrect');
+                 return;
+            }
+
+            if(userVal === correctVal) {
+                inp.classList.add('correct');
+                inp.classList.remove('incorrect');
+            } else {
+                inp.classList.add('incorrect');
+                inp.classList.remove('correct');
+                errors++;
+            }
+        });
+
+        const resEl = document.getElementById(`${sectionId}-result`);
+        if(errors === 0) {
+            resEl.innerText = "✨ Code Parfait !";
+            resEl.style.color = "#16a34a";
+        } else {
+            resEl.innerText = `⚠️ ${errors} erreurs. Debugging nécessaire !`;
+            resEl.style.color = "#dc2626";
+        }
+    }
+
+    // --- 1000 LABS LOGIC ---
+    let currentLabAnswer = "";
+    let labsCompleted = 0;
+
+    function loadLabProgress() {
+        const saved = localStorage.getItem('jsLabsCompleted');
+        if(saved) {
+            labsCompleted = parseInt(saved, 10);
+        }
+        updateLabUI();
+    }
+
+    function saveLabProgress() {
+        localStorage.setItem('jsLabsCompleted', labsCompleted);
+        updateLabUI();
+    }
+
+    function updateLabUI() {
+        document.getElementById('lab-count-display').textContent = `${labsCompleted} / 1000`;
+        const percent = Math.min(100, (labsCompleted / 1000) * 100);
+        document.getElementById('lab-progress-bar').style.width = `${percent}%`;
+    }
+
+    window.generateLab = function() {
+        const feedback = document.getElementById('lab-feedback');
+        const input = document.getElementById('lab-input');
+        feedback.textContent = "";
+        input.value = "";
+        input.classList.remove('correct', 'incorrect');
+        input.style.borderColor = "#475569";
+
+        // Patterns de génération
+        const types = ['var_const', 'var_let', 'func_arrow', 'arr_method', 'dom_select'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        
+        let questionText = "";
+        let answer = "";
+
+        if (type === 'var_const') {
+            const vars = ['PI', 'MAX_SIZE', 'API_URL', 'TAX_RATE'];
+            const chosenVar = vars[Math.floor(Math.random() * vars.length)];
+            questionText = `Déclarez une constante nommée <span style="color:#38bdf8">${chosenVar}</span>.`;
+            answer = "const";
+        } 
+        else if (type === 'var_let') {
+            const vars = ['score', 'age', 'counter', 'price'];
+            const chosenVar = vars[Math.floor(Math.random() * vars.length)];
+            questionText = `Déclarez une variable modifiable nommée <span style="color:#38bdf8">${chosenVar}</span>.`;
+            answer = "let";
+        }
+        else if (type === 'func_arrow') {
+            questionText = `Complétez la syntaxe d'une fonction fléchée : () <span style="color:#38bdf8">??</span> {}`;
+            answer = "=>";
+        }
+        else if (type === 'arr_method') {
+            const scenarios = [
+                { q: "Quelle méthode permet de transformer chaque élément ?", a: "map" },
+                { q: "Quelle méthode permet de garder seulement certains éléments ?", a: "filter" },
+                { q: "Quelle méthode permet de trouver un élément précis ?", a: "find" },
+                { q: "Quelle méthode permet d'ajouter à la fin du tableau ?", a: "push" }
+            ];
+            const sc = scenarios[Math.floor(Math.random() * scenarios.length)];
+            questionText = sc.q;
+            answer = sc.a;
+        }
+        else if (type === 'dom_select') {
+             const scenarios = [
+                { q: "Méthode moderne pour sélectionner '#monId'", a: "querySelector" },
+                { q: "Propriété pour changer le texte visible d'un élément", a: "textContent" },
+                { q: "Méthode pour écouter un clic", a: "addEventListener" }
+            ];
+            const sc = scenarios[Math.floor(Math.random() * scenarios.length)];
+            questionText = sc.q;
+            answer = sc.a;
+        }
+
+        document.getElementById('lab-question-area').innerHTML = questionText;
+        currentLabAnswer = answer;
+    }
+
+    window.checkLab = function() {
+        const input = document.getElementById('lab-input');
+        const feedback = document.getElementById('lab-feedback');
+        const userVal = input.value.trim().toLowerCase();
+        
+        if (userVal === currentLabAnswer.toLowerCase()) {
+            input.style.borderColor = "#16a34a";
+            feedback.style.color = "#16a34a";
+            feedback.textContent = "CORRECT ! +1 Lab";
+            labsCompleted++;
+            saveLabProgress();
+            
+            // Auto next after 1s
+            setTimeout(() => {
+                generateLab();
+            }, 1000);
+        } else {
+            input.style.borderColor = "#dc2626";
+            feedback.style.color = "#dc2626";
+            feedback.textContent = "Incorrect, essayez encore.";
+        }
+    }
+    
+    // Allow Enter key to submit lab
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "Enter" && document.getElementById('labs').classList.contains('active')) {
+            window.checkLab();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        qEl = document.getElementById('fc-q');
+        aEl = document.getElementById('fc-a');
+        catEl = document.getElementById('fc-cat');
+        countEl = document.getElementById('card-counter');
+        
+        updateCard();
+    });
+
+</script>
+
+</body>
+</html>

@@ -545,6 +545,7 @@
 
     </div>
 
+    <script src="js/auth.js"></script>
     <script>
         // --- NOUVELLE DATA ENRICHIE (65 Cartes) ---
         const allCards = [
@@ -749,6 +750,15 @@
         function saveLabProgress() {
             localStorage.setItem('htmlLabsCompleted', labsCompleted);
             updateLabUI();
+
+            // Sync with Server if logged in
+            if (window.Auth && Auth.user) {
+                fetch('api_progress.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ module: 'html', labs_completed: labsCompleted })
+                });
+            }
         }
 
         function updateLabUI() {

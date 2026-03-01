@@ -668,6 +668,7 @@
         </div>
     </div>
 
+    <script src="js/auth.js"></script>
     <script>
         console.log("PHP Training Script Loaded");
 
@@ -853,6 +854,15 @@
         function saveLabProgress() {
             localStorage.setItem('phpLabsCompleted', labsCompleted);
             updateLabUI();
+
+            // Sync with Server if logged in
+            if (window.Auth && Auth.user) {
+                fetch('api_progress.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ module: 'php', labs_completed: labsCompleted })
+                });
+            }
         }
 
         function updateLabUI() {
